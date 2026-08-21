@@ -1,0 +1,22 @@
+Options -Indexes
+Options +FollowSymLinks
+
+DirectoryIndex index.php
+
+RewriteEngine On
+
+# Completely exclude ethic_cfrm
+RewriteRule ^ethic_crm/ - [END]
+
+# Existing files/folders should work normally
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Remove .php from URL
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
+RewriteRule ^(.+)\.php$ /$1 [R=301,L]
+
+# Extensionless PHP URLs
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+?)/?$ $1.php [L,QSA]
