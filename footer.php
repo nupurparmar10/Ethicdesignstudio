@@ -120,9 +120,12 @@
                                 <li class="menu-item">
                                     <a href="contact" class="text-muted">Contact us</a>
                                 </li>
-                                <li class="menu-item"><a href="payment_policy" class="text-muted">Payment Policy</a></li>
+                                
                                 <li class="menu-item">
-                                    <a href="store_events" class="text-muted">Store & Events</a>
+                                    <a href="stores_events" class="text-muted">Events</a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="stores" class="text-muted">Stores</a>
                                 </li>
                             </ul>
                         </div>
@@ -141,6 +144,7 @@
                                 <li class="menu-item"><a href="cancellation_policy" class="text-muted">Cancellation Policy</a></li>
                                 <li class="menu-item"><a href="shipping_policy" class="text-muted">Shipping Policy</a></li>
                                 <li class="menu-item"><a href="privacy_policy" class="text-muted">Privacy Policy</a></li>
+                                <li class="menu-item"><a href="payment_policy" class="text-muted">Payment Policy</a></li>
                             </ul>
                         </div>
                     </div>

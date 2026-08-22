@@ -280,7 +280,7 @@ $m=mysqli_fetch_assoc(mysqli_query($con,"select * from matter where m_id ='38'")
         <div class="container-fluid">
             <div class="row align-items-center justify-content-center py-3 py-xl-0">
                 <div class="col-md-12 col-lg-12 col-12 d-md-block">
-                    <div class="d-flex align-items-xl-center justify-content-center gap-3 mobile-contact-scroll" style="font-size:14px;">
+                    <div class="d-flex align-items-xl-center justify-content-center gap-3 mobile-contact-scroll" style="font-size:14px;letter-spacing: 13%;">
                         <?php
                             $c = mysqli_fetch_row(mysqli_query($con, 'Select * FROM contact_info where c_id=4'));
                             if($c[2])

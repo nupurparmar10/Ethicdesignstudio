@@ -91,7 +91,6 @@ $msg="";
                                 while($m=mysqli_fetch_assoc($events))
                                 {
                                     $eventTabId = 'event-' . (int)$m['e_id'];
-                                    echo $m['pic'];
                             ?>
                             <div class="tab-pane fade <?php if($k==1) echo 'show active'; ?>" id="<?php echo $eventTabId; ?>" role="tabpanel" aria-labelledby="<?php echo $eventTabId; ?>-tab">
                                 <div class="row g-0 border">

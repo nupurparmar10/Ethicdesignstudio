@@ -271,7 +271,7 @@ foreach($v_ids as $index => $v_id)
 		echo "<tr>";
 	}
 
-	$v = mysqli_fetch_row(mysqli_query($con,
+	$v = mysqli_fetch_array(mysqli_query($con,
 	"SELECT * FROM variant WHERE v_id='$v_id'"));
 
 	$s = mysqli_fetch_row(mysqli_query($con,
@@ -307,7 +307,7 @@ foreach($v_ids as $index => $v_id)
             M.R.P $v[5]/-";
         }
     
-        $barcode = encryptId($v[0]);
+        $barcode = $v['barcode'];
     }
     else
     {
@@ -325,7 +325,7 @@ foreach($v_ids as $index => $v_id)
             M.R.P $v[5]/-";
         }
     
-        $barcode = encryptId($v[0]);
+        $barcode = $v['barcode'];
     }
 ?>
 

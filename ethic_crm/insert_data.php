@@ -51,6 +51,8 @@ if(isset($_POST["ptype"]))
                 {
                     mysqli_query($con,"insert into variant set item_id =$itemid, size='XS', color='$c',stock='0',webstock='0',purrate='$b',edsellrate='0',standard_color='$sc'");
                     $f=mysqli_fetch_row(mysqli_query($con,"select * from variant where item_id='$itemid' and size='XS' and color='$c'"));
+                    $barcode = encryptId($f[0]);
+                    mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$f[0]'");
                     $newrecord.="<option value='$f[0]-$f[4]-$x[1]-$f[5]'>$pcode - $_POST[saledesp] $f[2] $f[3]</option>";
                     $last.="$f[0]-$f[4]-$x[1]-$f[5]:$a:$b;";
                 }
@@ -59,6 +61,8 @@ if(isset($_POST["ptype"]))
                 {
                     mysqli_query($con,"insert into variant set item_id =$itemid, size='S', color='$c',stock='0',webstock='0',purrate='$b',edsellrate='0',standard_color='$sc'");
                     $f=mysqli_fetch_row(mysqli_query($con,"select * from variant where item_id='$itemid' and size='S' and color='$c'"));
+                    $barcode = encryptId($f[0]);
+                    mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$f[0]'");
                     $newrecord.="<option value='$f[0]-$f[4]-$x[1]-$f[5]'>$pcode - $_POST[saledesp] $f[2] $f[3]</option>";
                     $last.="$f[0]-$f[4]-$x[1]-$f[5]:$a:$b;";
                 }
@@ -67,6 +71,8 @@ if(isset($_POST["ptype"]))
                 {
                     mysqli_query($con,"insert into variant set item_id =$itemid, size='M', color='$c',stock='0',webstock='0',purrate='$b',edsellrate='0',standard_color='$sc'");
                     $f=mysqli_fetch_row(mysqli_query($con,"select * from variant where item_id='$itemid' and size='M' and color='$c'"));
+                    $barcode = encryptId($f[0]);
+                    mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$f[0]'");
                     $newrecord.="<option value='$f[0]-$f[4]-$x[1]-$f[5]'>$pcode - $_POST[saledesp] $f[2] $f[3]</option>";
                     $last.="$f[0]-$f[4]-$x[1]-$f[5]:$a:$b;";
                 }
@@ -75,6 +81,8 @@ if(isset($_POST["ptype"]))
                 {
                     mysqli_query($con,"insert into variant set item_id =$itemid, size='L', color='$c',stock='0',webstock='0',purrate='$b',edsellrate='0',standard_color='$sc'");
                     $f=mysqli_fetch_row(mysqli_query($con,"select * from variant where item_id='$itemid' and size='L' and color='$c'"));
+                    $barcode = encryptId($f[0]);
+                    mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$f[0]'");
                     $newrecord.="<option value='$f[0]-$f[4]-$x[1]-$f[5]'>$pcode - $_POST[saledesp] $f[2] $f[3]</option>";
                     $last.="$f[0]-$f[4]-$x[1]-$f[5]:$a:$b;";
                 }
@@ -83,6 +91,8 @@ if(isset($_POST["ptype"]))
                 {
                     mysqli_query($con,"insert into variant set item_id =$itemid, size='XL', color='$c',stock='0',webstock='0',purrate='$b',edsellrate='0',standard_color='$sc'");
                     $f=mysqli_fetch_row(mysqli_query($con,"select * from variant where item_id='$itemid' and size='XL' and color='$c'"));
+                    $barcode = encryptId($f[0]);
+                    mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$f[0]'");
                     $newrecord.="<option value='$f[0]-$f[4]-$x[1]-$f[5]'>$pcode - $_POST[saledesp] $f[2] $f[3]</option>";
                     $last.="$f[0]-$f[4]-$x[1]-$f[5]:$a:$b;";
                 }
@@ -91,6 +101,8 @@ if(isset($_POST["ptype"]))
                 {
                     mysqli_query($con,"insert into variant set item_id =$itemid, size='2XL', color='$c',stock='0',webstock='0',purrate='$b',edsellrate='0',standard_color='$sc'");
                     $f=mysqli_fetch_row(mysqli_query($con,"select * from variant where item_id='$itemid' and size='2XL' and color='$c'"));
+                    $barcode = encryptId($f[0]);
+                    mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$f[0]'");
                     $newrecord.="<option value='$f[0]-$f[4]-$x[1]-$f[5]'>$pcode - $_POST[saledesp] $f[2] $f[3]</option>";
                     $last.="$f[0]-$f[4]-$x[1]-$f[5]:$a:$b;";
                 }
@@ -99,6 +111,8 @@ if(isset($_POST["ptype"]))
                 {
                     mysqli_query($con,"insert into variant set item_id =$itemid, size='3XL', color='$c',stock='0',webstock='0',purrate='$b',edsellrate='0',standard_color='$sc'");
                     $f=mysqli_fetch_row(mysqli_query($con,"select * from variant where item_id='$itemid' and size='3XL' and color='$c'"));
+                    $barcode = encryptId($f[0]);
+                    mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$f[0]'");
                     $newrecord.="<option value='$f[0]-$f[4]-$x[1]-$f[5]'>$pcode - $_POST[saledesp] $f[2] $f[3]</option>";
                     $last.="$f[0]-$f[4]-$x[1]-$f[5]:$a:$b;";
                 }
@@ -107,6 +121,8 @@ if(isset($_POST["ptype"]))
                 {
                     mysqli_query($con,"insert into variant set item_id =$itemid, size='4XL', color='$c',stock='0',webstock='0',purrate='$b',edsellrate='0',standard_color='$sc'");
                     $f=mysqli_fetch_row(mysqli_query($con,"select * from variant where item_id='$itemid' and size='4XL' and color='$c'"));
+                    $barcode = encryptId($f[0]);
+                    mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$f[0]'");
                     $newrecord.="<option value='$f[0]-$f[4]-$x[1]-$f[5]'>$pcode - $_POST[saledesp] $f[2] $f[3]</option>";
                     $last.="$f[0]-$f[4]-$x[1]-$f[5]:$a:$b;";
                 }
@@ -115,6 +131,8 @@ if(isset($_POST["ptype"]))
                 {
                     mysqli_query($con,"insert into variant set item_id =$itemid, size='5XL', color='$c',stock='0',webstock='0',purrate='$b',edsellrate='0',standard_color='$sc'");
                     $f=mysqli_fetch_row(mysqli_query($con,"select * from variant where item_id='$itemid' and size='5XL' and color='$c'"));
+                    $barcode = encryptId($f[0]);
+                    mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$f[0]'");
                     $newrecord.="<option value='$f[0]-$f[4]-$x[1]-$f[5]'>$pcode - $_POST[saledesp] $f[2] $f[3]</option>";
                     $last.="$f[0]-$f[4]-$x[1]-$f[5]:$a:$b;";
                 }
@@ -123,6 +141,8 @@ if(isset($_POST["ptype"]))
                 {
                     mysqli_query($con,"insert into variant set item_id =$itemid, size='6XL', color='$c',stock='0',webstock='0',purrate='$b',edsellrate='0',standard_color='$sc'");
                     $f=mysqli_fetch_row(mysqli_query($con,"select * from variant where item_id='$itemid' and size='6XL' and color='$c'"));
+                    $barcode = encryptId($f[0]);
+                    mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$f[0]'");
                     $newrecord.="<option value='$f[0]-$f[4]-$x[1]-$f[5]'>$pcode - $_POST[saledesp] $f[2] $f[3]</option>";
                     $last.="$f[0]-$f[4]-$x[1]-$f[5]:$a:$b;";
                 }
@@ -146,6 +166,8 @@ if(isset($_POST["ptype"]))
                 $b=$npurrate;
                 mysqli_query($con,"insert into variant set item_id =$itemid, size='', color='$c',stock='0',webstock='0',purrate='$b',edsellrate='0',standard_color='$sc'");
                 $f=mysqli_fetch_row(mysqli_query($con,"select * from variant where item_id='$itemid' and size='' and color='$c'"));
+                $barcode = encryptId($f[0]);
+                mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$f[0]'");
                 $newrecord.="<option value='$f[0]-$f[4]-$x[1]-$f[5]'>$pcode - $_POST[saledesp] $f[2] $f[3]</option>";
                 $last.="$f[0]-$f[4]-$x[1]-$f[5]:$a:$b;";
             }

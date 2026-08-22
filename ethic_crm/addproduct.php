@@ -292,7 +292,8 @@ if (isset($_REQUEST['s1']))
 		mysqli_stmt_close($stmt);
 	}
 
-	if (isset($_SESSION['temp_products']) && !empty($_SESSION['temp_products'])) {
+	if (isset($_SESSION['temp_products']) && !empty($_SESSION['temp_products']))
+	{
 		$stmt_product = mysqli_prepare($con, "INSERT INTO item_details (item_id, pcode, ptype, hsn, saledesp, unit, tax, website, status, s_id, material_type, collection,product_desp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, '1', ?, ?, ?,?)");
 		$stmt_variant = mysqli_prepare($con, "INSERT INTO variant (item_id, size, color, stock, webstock, purrate, edsellrate,standard_color) VALUES (?, ?, ?, ?, ?, ?, ?,?)");
 		$stmt_tax = mysqli_prepare($con, "UPDATE item_details SET tax = ? WHERE item_id = ?");
@@ -364,6 +365,9 @@ if (isset($_REQUEST['s1']))
 						$variant['standard_color'],
 					);
 					mysqli_stmt_execute($stmt_variant);
+					$v_id = mysqli_insert_id($con);
+					$barcode = encryptId($v_id);
+					mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$v_id'");
 
 					mysqli_stmt_bind_param($stmt_tax, 'di', $tax, $actual_item_id);
 					mysqli_stmt_execute($stmt_tax);

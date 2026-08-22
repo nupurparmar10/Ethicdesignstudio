@@ -40,6 +40,8 @@
                     mysqli_query($con,"insert into variant set item_id =$itemid, size='$size', color='$color',stock='$qty',webstock='0',purrate='0',edsellrate='$edsellrate'");
 
                     $v=mysqli_fetch_row(mysqli_query($con,"select v_id from variant where item_id =$itemid and size='$size' and color='$color'"));
+                    $barcode = encryptId($v[0]);
+                    mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$v[0]'");
                     $fabric_cost=$_REQUEST['fabric_cost'.$new][$i];
                     $manu_cost=$_REQUEST['manu_cost'.$new][$i];
                     $tax=$_REQUEST['tax'.$new][$i];

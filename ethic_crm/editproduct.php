@@ -68,6 +68,9 @@ if (isset($_REQUEST['s3'])) {
                 mysqli_query($con, "update variant set  size='$size', color='$color',stock='$stock',webstock='$webstock',purrate='$purrate',edsellrate='$edsellrate',standard_color='$standard_color' where v_id='$v_id'");
             } else {
                 mysqli_query($con, "insert into variant set item_id ='$_REQUEST[item_id]', size='$size', color='$color',stock='$stock',webstock='$webstock',purrate='$purrate',edsellrate='$edsellrate',standard_color='$standard_color'");
+                $new_v_id = mysqli_insert_id($con);
+                $barcode = encryptId($new_v_id);
+                mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$new_v_id'");
             }
         }
     }

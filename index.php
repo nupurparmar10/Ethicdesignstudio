@@ -97,6 +97,13 @@ $msg="";
             .kalles-marquee-track { animation-duration: 12s; }
         }
 
+        /* Hide flickity-button on desktop / PC */
+        @media (min-width: 992px) {
+            .flickity-button {
+                display: none !important;
+            }
+        }
+
         /* Shipping / perks section cards */
         .kalles-section-type-shipping {
             padding: 20px 0;
@@ -560,7 +567,7 @@ $msg="";
     </section>
 
     <!-- TESTIMONIALS -->
-    <section class="testimonials-section py-5" style="background-color: #f9f9f9; border-top: 1px solid #eee;">
+    <section class="testimonials-section py-5" style="background-color: #f7eae0; border-top: 1px solid #eee;">
         <div class="container" dir="ltr">
             <div class="row justify-content-center">
                 <div class="col-lg-7">
