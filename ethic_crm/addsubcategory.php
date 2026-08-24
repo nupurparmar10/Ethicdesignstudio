@@ -7,7 +7,7 @@ if (isset($_REQUEST['s1'])) {
     $g = mysqli_fetch_row(mysqli_query($con, "select max(s_id) from pro_subcategory"));
     $id = $g[0] + 1;
 
-    $uploadDir = "../images/products";
+    $uploadDir = "../assets/images/products/";
     $picpath = '';
 
     if (!empty($_FILES['pic']['name']) && is_uploaded_file($_FILES['pic']['tmp_name'])) {
@@ -24,7 +24,7 @@ if (isset($_REQUEST['s1'])) {
             $sanitizedFilename = time() . '_' . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES['pic']['name']));
             $tempPath = $_FILES['pic']['tmp_name'];
             if (move_uploaded_file($tempPath, $uploadDir . $sanitizedFilename)) {
-                $picpath = $sanitizedFilename;
+                $picpath = "assets/images/products/" . $sanitizedFilename;
             } else {
                 $errors[] = "Failed to upload image.";
             }
@@ -40,7 +40,7 @@ if (isset($_REQUEST['s3'])) {
     $oldPic = $_POST['pic_old'] ?? '';
     $newPic = $_FILES['pic']['name'] ?? '';
 
-    $uploadDir = "../images/products";
+    $uploadDir = "../assets/images/products/";
     $picpath = $oldPic;
 
     if (!empty($newPic) && is_uploaded_file($_FILES['pic']['tmp_name'])) {
@@ -54,7 +54,7 @@ if (isset($_REQUEST['s3'])) {
         $tempPath = $_FILES['pic']['tmp_name'];
 
         if (move_uploaded_file($tempPath, $uploadDir . $sanitizedFilename)) {
-            $picpath = $sanitizedFilename;
+            $picpath = "assets/images/products/" . $sanitizedFilename;
         }
     }
 
@@ -205,8 +205,8 @@ if (isset($_REQUEST['s3'])) {
 
                                             <input type="hidden" name="pic_old" value="<?php echo htmlspecialchars($c[3]); ?>">
 
-                                            <?php if (!empty($c[3]) && file_exists("../images/products" . $c[3])) { ?>
-                                                <img class="img-fluid" src="../images/products<?php echo htmlspecialchars($c[3]); ?>" style="height:150px; width:auto; margin-top:20px;" />
+                                            <?php if (!empty($c[3]) && file_exists("../" . $c[3])) { ?>
+                                                <img class="img-fluid" src="../<?php echo htmlspecialchars($c[3]); ?>" style="height:150px; width:auto; margin-top:20px;" />
                                             <?php } ?>
                                         </div>
                                     </div>

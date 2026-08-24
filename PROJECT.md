@@ -21,3 +21,6 @@
 - **Security**: CRM requires `$_SESSION['account']`. Passwords use `md5()`.
 
 *For Database schema, see DATABASE.md.*
+
+## 4. Media & Assets
+- **Image Uploads**: Product images and related categorization images (like `material_type` and `pro_subcategory`) are physically stored in the `assets/images/products/` directory. The CRM stores these as full relative paths (e.g., `assets/images/products/filename.jpg`) in the database, allowing straightforward resolution across both the storefront and the backend CRM.

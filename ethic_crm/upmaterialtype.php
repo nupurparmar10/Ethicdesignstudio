@@ -4,9 +4,31 @@ session_start();
 include_once("connect.php");
 $msg = $msg1 = "";
 
-if (isset($_GET['update_id']) && isset($_GET['value'])) {
-    $id = intval($_GET['update_id']);
-    $value = mysqli_real_escape_string($con, $_GET['value']);
+if (isset($_REQUEST['update_id']) && isset($_REQUEST['value'])) {
+    $id = intval($_REQUEST['update_id']);
+    $value = mysqli_real_escape_string($con, $_REQUEST['value']);
+
+    $uploadDir = "../assets/images/products/";
+    $picpath = '';
+    
+    // Try to get existing pic
+    $res = mysqli_query($con, "SELECT pic FROM material_type WHERE m_id = $id");
+    if ($row = mysqli_fetch_assoc($res)) {
+        $picpath = $row['pic'];
+    }
+
+    $fileKey = 'pic' . $id;
+    if (isset($_FILES[$fileKey]) && !empty($_FILES[$fileKey]['name']) && is_uploaded_file($_FILES[$fileKey]['tmp_name'])) {
+        $sanitizedFilename = time() . '_' . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES[$fileKey]['name']));
+        $tempPath = $_FILES[$fileKey]['tmp_name'];
+        if (move_uploaded_file($tempPath, $uploadDir . $sanitizedFilename)) {
+            // Delete old file
+            if (!empty($picpath) && file_exists("../" . $picpath) && is_file("../" . $picpath)) {
+                unlink("../" . $picpath);
+            }
+            $picpath = "assets/images/products/" . $sanitizedFilename;
+        }
+    }
 
     $check_query = "SELECT * FROM material_type WHERE type = '$value' AND m_id != $id";
     $check_result = mysqli_query($con, $check_query);
@@ -14,7 +36,7 @@ if (isset($_GET['update_id']) && isset($_GET['value'])) {
     if (mysqli_num_rows($check_result) > 0) {
         $msg1 = "This value already exists.";
     } else {
-        $sql = "UPDATE material_type SET type = '$value' WHERE m_id = $id";
+        $sql = "UPDATE material_type SET type = '$value', pic = '$picpath' WHERE m_id = $id";
         if (mysqli_query($con, $sql)) {
             $msg = "Type Updated Successfully";
         } else {
@@ -35,6 +57,17 @@ if (isset($_GET['delete_id'])) {
 if (isset($_POST['submit'])) {
     $value = mysqli_real_escape_string($con, $_POST['additional'] ?? '');
 
+    $uploadDir = "../assets/images/products/";
+    $picpath = '';
+
+    if (!empty($_FILES['pic']['name']) && is_uploaded_file($_FILES['pic']['tmp_name'])) {
+        $sanitizedFilename = time() . '_' . preg_replace("/[^a-zA-Z0-9\._-]/", "", basename($_FILES['pic']['name']));
+        $tempPath = $_FILES['pic']['tmp_name'];
+        if (move_uploaded_file($tempPath, $uploadDir . $sanitizedFilename)) {
+            $picpath = "assets/images/products/" . $sanitizedFilename;
+        }
+    }
+
     if (!empty($value)) {
 
         $check = mysqli_query($con, "SELECT * FROM material_type WHERE type = '$value'");
@@ -42,7 +75,7 @@ if (isset($_POST['submit'])) {
         if (mysqli_num_rows($check) > 0) {
             $msg1 = "This value already exists.";
         } else {
-            mysqli_query($con, "INSERT INTO material_type (type) VALUES ('$value')");
+            mysqli_query($con, "INSERT INTO material_type (type, pic) VALUES ('$value', '$picpath')");
             $msg = "Type Added Successfully";
         }
     } else {
@@ -81,9 +114,22 @@ if (isset($_POST['submit'])) {
                 return;
             }
             const value = element.value;
-            const encodedValue = encodeURIComponent(value);
-            console.log(value);
-            window.location.href = `upmaterialtype.php?update_id=${id}&value=${encodedValue}`;
+            
+            const form = document.querySelector('form.form-horizontal');
+            
+            const hiddenUpdateId = document.createElement('input');
+            hiddenUpdateId.type = 'hidden';
+            hiddenUpdateId.name = 'update_id';
+            hiddenUpdateId.value = id;
+            form.appendChild(hiddenUpdateId);
+
+            const hiddenValue = document.createElement('input');
+            hiddenValue.type = 'hidden';
+            hiddenValue.name = 'value';
+            hiddenValue.value = value;
+            form.appendChild(hiddenValue);
+            
+            form.submit();
         }
     </script>
 </head>
@@ -124,13 +170,13 @@ if (isset($_POST['submit'])) {
                         while ($row = mysqli_fetch_assoc($result)) {
                             $id = $row['m_id'];
                             $data[$id] = [
-                                'name' => $row['type'] ?? ''
-
+                                'name' => $row['type'] ?? '',
+                                'pic' => $row['pic'] ?? ''
                             ];
                         }
                         ?>
 
-                        <form class="form-horizontal" method="post" action="upmaterialtype.php">
+                        <form class="form-horizontal" method="post" action="upmaterialtype.php" enctype="multipart/form-data">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <h3 class="panel-title"><strong>Add</strong> Material Type</h3>
@@ -141,13 +187,22 @@ if (isset($_POST['submit'])) {
                                             <thead>
                                                 <tr>
                                                     <th>Type</th>
+                                                    <th>Image</th>
+                                                    <th>Update</th>
+                                                    <th>Delete</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php foreach ($data as $id => $type) { ?>
                                                     <tr>
-                                                        <td style="width:100%">
+                                                        <td style="width:40%">
                                                             <input type="text" id="value<?php echo $id; ?>" class="form-control" name="value<?php echo $id; ?>" value="<?php echo htmlspecialchars($type['name']); ?>" required />
+                                                        </td>
+                                                        <td style="width:40%">
+                                                            <?php if (!empty($type['pic']) && file_exists("../" . $type['pic'])) { ?>
+                                                                <img src="../<?php echo htmlspecialchars($type['pic']); ?>" style="height:50px; width:auto; margin-bottom:5px; display:block;" />
+                                                            <?php } ?>
+                                                            <input type="file" id="pic<?php echo $id; ?>" name="pic<?php echo $id; ?>" class="form-control" accept="image/*" />
                                                         </td>
                                                         <td style="width:10%">
                                                             <button type="button" onclick="updateValue('<?php echo $id; ?>')" class="btn btn-primary btn-block">
@@ -167,7 +222,10 @@ if (isset($_POST['submit'])) {
                                                     <td>
                                                         <input type="text" class="form-control" name="additional" placeholder="Additional Value" />
                                                     </td>
-                                                    <td style="width:10%">
+                                                    <td>
+                                                        <input type="file" name="pic" class="form-control" accept="image/*" />
+                                                    </td>
+                                                    <td colspan="2">
                                                         <button type="submit" name="submit" class="btn btn-primary btn-block">Add</button>
                                                     </td>
                                                 </tr>

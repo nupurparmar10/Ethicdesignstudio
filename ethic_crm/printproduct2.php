@@ -2,10 +2,10 @@
 	ob_start();
 	session_start();
 	include_once("connect.php");
-	define('BC_OFFSET',     '100000000000'); 
-	define('BC_RANGE',      '900000000000'); 
-	define('BC_MULTIPLIER', '333667');        
-	define('BC_INVERSE',    '702999997003');  
+if(!defined('BC_OFFSET')) define('BC_OFFSET','100000000000');
+if(!defined('BC_RANGE')) define('BC_RANGE','900000000000');
+if(!defined('BC_MULTIPLIER')) define('BC_MULTIPLIER','333667');
+if(!defined('BC_INVERSE')) define('BC_INVERSE','702999997003');
 
 	function encryptId($v_id)
 	{
@@ -100,23 +100,31 @@ function printreceipt()
 
 @page {
 	size: A4 portrait;
-	margin: 0;
+	margin: 0px;
 }
 
 :root
 {
-	--page-width: 210mm;
+    /* Page settings */
+    --page-width: 210mm;
     --page-height: 297mm;
-    --page-margin-y: 3.7mm;
-    --page-margin-x: 4.75mm;
-    --grid-width: 197.5mm;
-    --row-height: 22.2mm;
-    --column-width: 40.1mm;
-    --barcode-width: 32mm;
+    
+    /* Grid starting position (Distance from top/left of page to the FIRST box) */
+    --grid-offset-x: 3.0mm;
+    --grid-offset-y: 9.0mm; 
+    
+    /* Individual box size (Measure one box on bg.jpeg) */
+    --box-width: 38.0mm;
+    --box-height: 20.0mm;
+    
+    /* Gaps between boxes (Measure the white space between boxes) */
+    --col-gap: 3.5mm;
+    --row-gap: 5.0mm; /* THIS CONTROLS THE SPACE BETWEEN EACH ROW (TR) */
+    
+    /* Inside box contents */
+    --barcode-width: 31mm;
     --barcode-height: 8mm;
 }
-
-
 
 *
 {
@@ -145,40 +153,44 @@ body
 {
 	width:var(--page-width);
 	height:var(--page-height);
-	margin:0 auto; /* Center on screen */
-	padding:var(--page-margin-y) var(--page-margin-x);
+	margin:0 auto; 
+	padding:0;
 	overflow:hidden;
 	background-image:url('bg.jpeg');
 	background-size:var(--page-width) var(--page-height);
 	background-repeat:no-repeat;
 	background-position:top left;
+	position:relative;
 	page-break-inside:avoid;
 	break-inside:avoid;
 }
 
 .barcode-sheet
 {
-	width:var(--grid-width);
-	border-collapse:collapse;
-	border-spacing:0;
+	border-collapse:separate;
+	border-spacing: var(--col-gap) var(--row-gap);
+	position:absolute;
+	top: calc(var(--grid-offset-y) - var(--row-gap));
+	left: calc(var(--grid-offset-x) - var(--col-gap));
+	margin: 0;
 	table-layout:fixed;
-	margin:0;
 	page-break-inside:avoid;
 	break-inside:avoid;
 }
 
 .barcode-sheet tr
 {
-	height:var(--row-height);
+	height:var(--box-height);
 	page-break-inside:avoid;
 	break-inside:avoid;
 }
 
 .barcode-sheet td
 {
-	width:var(--column-width);
-	height:var(--row-height);
-	max-height:var(--row-height);
+	width:var(--box-width);
+	height:var(--box-height);
+	max-width:var(--box-width);
+	max-height:var(--box-height);
 	padding:0;
 	text-align:center;
 	vertical-align:middle;
@@ -189,17 +201,17 @@ body
 
 .barcode-cell
 {
-	width:var(--column-width);
+	width:var(--box-width);
 	max-width:100%;
-	height:var(--row-height);
-	max-height:var(--row-height);
+	height:var(--box-height);
+	max-height:var(--box-height);
 	overflow:hidden;
 	display:flex;
 	flex-direction:column;
 	align-items:center;
 	justify-content:center;
 	margin:0 auto;
-	padding:1.6mm 4mm
+	padding:1mm;
 	box-sizing:border-box;
 	page-break-inside:avoid;
 	break-inside:avoid;
@@ -307,7 +319,7 @@ foreach($v_ids as $index => $v_id)
             M.R.P $v[5]/-";
         }
     
-        $barcode = $v['barcode'];
+        $barcode = encryptId($v['v_id']);
     }
     else
     {
@@ -325,7 +337,7 @@ foreach($v_ids as $index => $v_id)
             M.R.P $v[5]/-";
         }
     
-        $barcode = $v['barcode'];
+        $barcode = encryptId($v['v_id']);
     }
 ?>
 
@@ -359,24 +371,36 @@ foreach($v_ids as $index => $v_id)
 	if($col == 5)
 	{
 		echo "</tr>";
-
 		$col = 0;
 		$row++;
+	}
 
-		// After 13 rows create next page
-		if($row == 13 && $index < count($v_ids)-1)
+	// Break page after exactly 64 barcodes
+	if($i % 65 == 0 && $index < count($v_ids)-1)
+	{
+		// Pad remaining columns if we break mid-row
+		if($col != 0)
 		{
-			echo "</tbody></table>";
-			echo "</div>";
-
-			echo '<div class="page-break"></div>';
-
-			echo '<div class="barcode-page">';
-			echo '<table border="0" class="barcode-sheet">';
-			echo '<tbody>';
-
+			while($col < 5)
+			{
+				echo "<td width='20%'></td>";
+				$col++;
+			}
+			echo "</tr>";
+			$col = 0;
 			$row = 0;
 		}
+
+		echo "</tbody></table>";
+		echo "</div>";
+
+		echo '<div class="page-break"></div>';
+
+		echo '<div class="barcode-page">';
+		echo '<table border="0" class="barcode-sheet">';
+		echo '<tbody>';
+
+		$row = 0;
 	}
 }
 

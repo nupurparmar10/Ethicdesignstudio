@@ -43,7 +43,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'add_to_cart')
     $size_escaped = mysqli_real_escape_string($con, $size);
     $item_id_escaped = mysqli_real_escape_string($con, $item_id);
     
-    $debug_query_sql = "SELECT v_id, webstock FROM variant WHERE item_id = '$item_id_escaped' AND color = '$color_escaped' AND size = '$size_escaped' LIMIT 1";
+    $debug_query_sql = "SELECT v_id, webstock FROM variant WHERE item_id = '$item_id_escaped' AND color = '$color_escaped' AND size = '$size_escaped' LIMIT 1 ";
     $query = mysqli_query($con, $debug_query_sql);
     if ($row = mysqli_fetch_assoc($query)) 
     {

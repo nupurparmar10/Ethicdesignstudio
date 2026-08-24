@@ -122,7 +122,7 @@ if(isset($_POST['shop_filter_ajax']))
     }
     $shop_offset=($shop_page-1)*$shop_per_page;
 
-    $sql="SELECT i.*, display_variant.* FROM (SELECT v.item_id, SUBSTRING_INDEX(GROUP_CONCAT(v.v_id ORDER BY v.v_id ASC), ',', 1) AS display_v_id FROM variant v JOIN item_details i ON i.item_id=v.item_id $where GROUP BY v.item_id) product_variant JOIN item_details i ON i.item_id=product_variant.item_id JOIN variant display_variant ON display_variant.v_id=product_variant.display_v_id ORDER BY $order_by LIMIT $shop_per_page OFFSET $shop_offset";
+    $sql="SELECT i.*,display_variant.* FROM (SELECT v.item_id,SUBSTRING_INDEX(GROUP_CONCAT(v.v_id ORDER BY v.v_id ASC),',',1) AS display_v_id FROM variant v JOIN item_details i ON i.item_id=v.item_id AND i.status=1 AND i.website=1 $where GROUP BY v.item_id) product_variant JOIN item_details i ON i.item_id=product_variant.item_id JOIN variant display_variant ON display_variant.v_id=product_variant.display_v_id ORDER BY $order_by LIMIT $shop_per_page OFFSET $shop_offset";
     $m1=mysqli_query($con,$sql);
     if(mysqli_num_rows($m1)>0)
     {
