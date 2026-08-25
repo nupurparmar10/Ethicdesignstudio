@@ -123,7 +123,7 @@ body {
     margin: 0 !important;
     padding: 0 !important;
 
-    background-image: url('bg.jpeg');
+    background-image: url('bg1.jpeg');
     background-repeat: no-repeat;
     background-position: 0 0;
     background-size: 210mm 297mm;

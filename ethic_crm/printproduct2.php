@@ -2,10 +2,23 @@
 	ob_start();
 	session_start();
 	include_once("connect.php");
-if(!defined('BC_OFFSET')) define('BC_OFFSET','100000000000');
-if(!defined('BC_RANGE')) define('BC_RANGE','900000000000');
-if(!defined('BC_MULTIPLIER')) define('BC_MULTIPLIER','333667');
-if(!defined('BC_INVERSE')) define('BC_INVERSE','702999997003');
+
+	$msg="";
+
+	if(!isset($_REQUEST['v_id']))
+	{
+		header("Location: viewproduct1.php");
+		die;
+	}
+
+	if(isset($_POST['v_id']))
+	{
+		$v_ids = $_POST['v_id'];
+	}
+	if(!defined('BC_OFFSET')) define('BC_OFFSET','100000000000');
+    if(!defined('BC_RANGE')) define('BC_RANGE','900000000000');
+    if(!defined('BC_MULTIPLIER')) define('BC_MULTIPLIER','333667');
+    if(!defined('BC_INVERSE')) define('BC_INVERSE','702999997003');
 
 	function encryptId($v_id)
 	{
@@ -19,29 +32,6 @@ if(!defined('BC_INVERSE')) define('BC_INVERSE','702999997003');
 		$temp = bcmod(bcsub((string)$code, BC_OFFSET), BC_RANGE);
 		$dec  = bcmod(bcmul($temp, BC_INVERSE), BC_RANGE);
 		return (int)$dec;
-	}
-
-	$msg="";
-
-	if(!isset($_REQUEST['v_id']))
-	{
-		header("Location: viewproduct1.php");
-		die;
-	}
-
-	if(isset($_POST['v_id']))
-	{
-		$v_ids = array();
-		foreach($_POST['v_id'] as $v_id)
-		{
-			$v_id = (int)$v_id;
-			$stock = isset($_POST['stock'][$v_id]) ? (int)$_POST['stock'][$v_id] : 1;
-
-			for($j = 0; $j < $stock; $j++)
-			{
-				$v_ids[] = $v_id;
-			}
-		}
 	}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -69,10 +59,10 @@ $(document).ready(function()
 		var text1 = $('input:hidden[name=i'+i+']').val();
 
 		$("#barcode"+i).JsBarcode(text1,{
-			// width:1,
-			// height:30,
-			// displayValue:false
-			width:2,
+// 			width:1,
+// 			height:30,
+// 			displayValue:false
+            width:2,
 			height:30,
 			displayValue:false,
 			margin:0,
@@ -92,38 +82,10 @@ function printreceipt()
 
 <style>
 
-/* @page
+@page
 {
 	size:A4 portrait;
 	margin:5mm;
-} */
-
-@page {
-	size: A4 portrait;
-	margin: 0px;
-}
-
-:root
-{
-    /* Page settings */
-    --page-width: 210mm;
-    --page-height: 297mm;
-    
-    /* Grid starting position (Distance from top/left of page to the FIRST box) */
-    --grid-offset-x: 3.0mm;
-    --grid-offset-y: 9.0mm; 
-    
-    /* Individual box size (Measure one box on bg.jpeg) */
-    --box-width: 38.0mm;
-    --box-height: 20.0mm;
-    
-    /* Gaps between boxes (Measure the white space between boxes) */
-    --col-gap: 3.5mm;
-    --row-gap: 5.0mm; /* THIS CONTROLS THE SPACE BETWEEN EACH ROW (TR) */
-    
-    /* Inside box contents */
-    --barcode-width: 31mm;
-    --barcode-height: 8mm;
 }
 
 *
@@ -131,127 +93,64 @@ function printreceipt()
 	box-sizing:border-box;
 }
 
-html
-{
-	width:var(--page-width);
-	min-height:var(--page-height);
-	margin:0;
-	padding:0;
-}
-
 body
 {
-	width:var(--page-width);
-	min-height:var(--page-height);
-	margin:0;
 	padding:0;
 	font-family:Calibri,sans-serif;
 	background:#fff;
-}
-
-.barcode-page
-{
-	width:var(--page-width);
-	height:var(--page-height);
-	margin:0 auto; 
-	padding:0;
-	overflow:hidden;
-	background-image:url('bg.jpeg');
-	background-size:var(--page-width) var(--page-height);
-	background-repeat:no-repeat;
-	background-position:top left;
-	position:relative;
-	page-break-inside:avoid;
-	break-inside:avoid;
+	margin: 9mm -2mm 10mm -2mm;
 }
 
 .barcode-sheet
 {
-	border-collapse:separate;
-	border-spacing: var(--col-gap) var(--row-gap);
-	position:absolute;
-	top: calc(var(--grid-offset-y) - var(--row-gap));
-	left: calc(var(--grid-offset-x) - var(--col-gap));
-	margin: 0;
+	width:100%;
+	border-collapse:collapse;
 	table-layout:fixed;
 	page-break-inside:avoid;
-	break-inside:avoid;
 }
 
 .barcode-sheet tr
 {
-	height:var(--box-height);
-	page-break-inside:avoid;
-	break-inside:avoid;
+	height:21mm;
 }
 
 .barcode-sheet td
 {
-	width:var(--box-width);
-	height:var(--box-height);
-	max-width:var(--box-width);
-	max-height:var(--box-height);
-	padding:0;
+	width:20%;
+	height:21mm;
+	padding:0mm 2mm;
 	text-align:center;
 	vertical-align:middle;
 	overflow:hidden;
-	page-break-inside:avoid;
-	break-inside:avoid;
 }
-
-.barcode-cell
-{
-	width:var(--box-width);
-	max-width:100%;
-	height:var(--box-height);
-	max-height:var(--box-height);
-	overflow:hidden;
-	display:flex;
-	flex-direction:column;
-	align-items:center;
-	justify-content:center;
-	margin:0 auto;
-	padding:1mm;
-	box-sizing:border-box;
-	page-break-inside:avoid;
-	break-inside:avoid;
-}
-
-
 
 .barcode-label
 {
-	width:100%;
+	width:34mm;
 	max-width:100%;
 	font-size:10px;
 	line-height:11px;
-	margin:0 0 0.5mm;
+	margin:0 auto 1mm;
 	word-break:break-word;
 	white-space:normal;
-	max-height:8.8mm;
+	max-height:31px;
 	overflow:hidden;
-	flex-shrink:1;
 }
 
 .barcode-img
 {
-	width:var(--barcode-width);
-	max-width:100%;
-	height:var(--barcode-height);
-	flex-shrink:0;
 	display:block;
 	margin:0 auto;
+	width:32mm;
+	max-width:100%;
+	height:8mm;
 }
 
 .page-break
 {
 	page-break-after:always;
-	break-after:page;
-	height:0;
-	margin:0;
-	padding:0;
-	overflow:hidden;
 }
+
 
 
 </style>
@@ -260,13 +159,12 @@ body
 <body onload="printreceipt();" class="table-responsive">
 
 <?php
-$count = count($v_ids);
+$count = count($_POST['v_id']);
 ?>
 
 <input type="hidden" name="id" value="<?php echo $count; ?>">
 
-<div class="barcode-page">
-<table border="0" class="barcode-sheet">
+<table border="0" class="barcode-sheet" cellspacing="2">
 <tbody>
 
 <?php
@@ -348,17 +246,13 @@ foreach($v_ids as $index => $v_id)
 	name="<?php echo $name; ?>"
 	value="<?php echo $barcode; ?>">
 
-	<div class="barcode-cell">
+	<p class="barcode-label">
+		<?php echo $value; ?>
+	</p>
 
-		<p class="barcode-label">
-			<?php echo $value; ?>
-		</p>
-
-		<img
-		id="<?php echo $name1; ?>"
-		class="barcode-img" />
-
-	</div>
+	<img
+	id="<?php echo $name1; ?>"
+	class="barcode-img" />
 
 </td>
 
@@ -371,36 +265,22 @@ foreach($v_ids as $index => $v_id)
 	if($col == 5)
 	{
 		echo "</tr>";
+
 		$col = 0;
 		$row++;
-	}
 
-	// Break page after exactly 64 barcodes
-	if($i % 65 == 0 && $index < count($v_ids)-1)
-	{
-		// Pad remaining columns if we break mid-row
-		if($col != 0)
+		// After 13 rows create next page
+		if($row == 13 && $index < count($v_ids)-1)
 		{
-			while($col < 5)
-			{
-				echo "<td width='20%'></td>";
-				$col++;
-			}
-			echo "</tr>";
-			$col = 0;
+			echo "</tbody></table>";
+
+			echo '<div class="page-break"></div>';
+
+			echo '<table border="0" class="barcode-sheet">';
+			echo '<tbody>';
+
 			$row = 0;
 		}
-
-		echo "</tbody></table>";
-		echo "</div>";
-
-		echo '<div class="page-break"></div>';
-
-		echo '<div class="barcode-page">';
-		echo '<table border="0" class="barcode-sheet">';
-		echo '<tbody>';
-
-		$row = 0;
 	}
 }
 
@@ -419,7 +299,6 @@ if($col != 0)
 
 </tbody>
 </table>
-</div>
 
 </body>
 </html>
