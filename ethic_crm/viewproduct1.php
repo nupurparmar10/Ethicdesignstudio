@@ -66,18 +66,19 @@ if (isset($_REQUEST['msg1'])) {
 	<script>
 		function selectall() {
 			var sall = document.getElementById("all");
-			if (sall.checked == 1) {
-				var scholar = document.getElementsByName("v_id[]");
-				for (i = 0; i < scholar.length; i++) {
-					scholar[i].checked = 1;
-				}
-			} else {
-				var scholar = document.getElementsByName("v_id[]");
-				for (i = 0; i < scholar.length; i++) {
-					scholar[i].checked = 0;
-				}
+			
+			// Optional: If unchecking the header box, clear memory of all previous page selections too
+			if (!sall.checked) {
+				selectedVIds = []; 
+			}
+
+			var scholar = document.getElementsByName("v_id[]");
+			for (i = 0; i < scholar.length; i++) {
+				scholar[i].checked = sall.checked;
+				$(scholar[i]).trigger('change'); // This ensures the selectedVIds array stays in sync
 			}
 		}
+
 	</script>
 	<script src="js\jquery.min.js"></script>
 	<script src="js/jquery-1.11.0.min.js"></script>
@@ -654,8 +655,10 @@ if (isset($_REQUEST['msg1'])) {
 	<script type="text/javascript">
 		$(function () {
 			$("#viewproduct-display-table").dataTable({
-				"pageLength": 10,
-				"lengthMenu": [[10, 30, 65, 130], [10, 30, 65, 130]]
+				"pageLength": 65,
+				"lengthMenu": [[10, 30, 65, 130], [10, 30, 65, 130]],
+				"ordering": false,
+				"dom": "<'row'<'col-lg-6 col-sm-6'l><'col-lg-6 col-sm-6'f>><'row'<'col-sm-12'p>>rt<'row'<'col-lg-6 col-sm-6'i><'col-lg-6 col-sm-6'p>>"
 			});
 		});
 	</script>

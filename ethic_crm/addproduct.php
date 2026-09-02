@@ -496,8 +496,9 @@ while($c=mysqli_fetch_assoc($c1))
 				return;
 			}
 			var $tr = $table.find('tr').eq(1).clone();
-			$tr.appendTo($table).find('input').val('');
-			$tr.appendTo($table).find('select').val('');
+			$tr.find('input').val('');
+			$tr.find('select').val('');
+			$tr.append('<td style="vertical-align: middle; text-align: center;"><a href="javascript:void(0);" onclick="$(this).closest(\'tr\').remove(); calc2();" style="color: red; font-size: 24px; font-weight: bold; text-decoration: none;" title="Remove">&times;</a></td>');
 			$("#input_fields5").append($tr);
 			$tr.find('input').eq(0).focus();
 

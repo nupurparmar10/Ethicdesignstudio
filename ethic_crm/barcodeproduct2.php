@@ -44,7 +44,7 @@ $variants = mysqli_query($con, "SELECT * FROM variant WHERE v_id IN ($id_list) O
 							<div class="panel-heading">
 								<h3 class="panel-title">Selected Variants</h3>
 							</div>
-							<form action="demo.php" method="post" target="_blank">
+							<form action="printproduct2.php" method="post" target="_blank">
 								<div class="panel-body">
 									<button type="submit" class="btn btn-info" style="margin-bottom:15px;">Print Barcode</button>
 									<table class="table table-bordered table-actions">

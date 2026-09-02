@@ -159,28 +159,7 @@ body
 <body onload="printreceipt();" class="table-responsive">
 
 <?php
-$qty_map = isset($_POST['stock']) && is_array($_POST['stock']) ? $_POST['stock'] : array();
-
-// Build an expanded list: repeat each v_id as many times as its quantity
-$expanded_v_ids = array();
-foreach($v_ids as $v_id)
-{
-	$qty = isset($qty_map[$v_id]) ? (int)$qty_map[$v_id] : 1;
-
-	// Safety: never print zero/negative, default to 1
-	if($qty < 1)
-	{
-		$qty = 1;
-	}
-
-	for($q = 0; $q < $qty; $q++)
-	{
-		$expanded_v_ids[] = $v_id;
-	}
-}
-
-$v_ids = $expanded_v_ids;
-$count = count($v_ids);
+$count = count($_POST['v_id']);
 ?>
 
 <input type="hidden" name="id" value="<?php echo $count; ?>">
@@ -238,7 +217,7 @@ foreach($v_ids as $index => $v_id)
             M.R.P $v[5]/-";
         }
     
-        $barcode = $v['barcode'];
+        $barcode = encryptId($v['v_id']);
     }
     else
     {
@@ -256,7 +235,7 @@ foreach($v_ids as $index => $v_id)
             M.R.P $v[5]/-";
         }
     
-        $barcode = $v['barcode'];
+        $barcode = encryptId($v['v_id']);
     }
 ?>
 
