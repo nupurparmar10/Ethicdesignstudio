@@ -1081,15 +1081,15 @@ while ($rp = mysqli_fetch_assoc($related_result)) {
 
                     <div class="mb-3">
                         <label for="review-name" role="button" class="fw-medium mb-2 text-muted">Your Name*</label>
-                        <input id="review-name" name="name" class="form-control form-control-sm py-2 rounded-0" placeholder="John Smith" type="text" required>
+                        <input id="review-name" name="name" class="form-control form-control-sm py-2 rounded-0" type="text" required>
                     </div>
                     <div class="mb-3">
                         <label for="review-email" role="button" class="fw-medium mb-2 text-muted">Your Email*</label>
-                        <input id="review-email" name="email" class="form-control form-control-sm py-2 rounded-0" placeholder="example@yourdomain.com" type="email" required>
+                        <input id="review-email" name="email" class="form-control form-control-sm py-2 rounded-0" type="email" required>
                     </div>
                     <div class="mb-3">
                         <label for="review-title" role="button" class="fw-medium mb-2 text-muted">Review Title*</label>
-                        <input id="review-title" name="title" class="form-control form-control-sm py-2 rounded-0" placeholder="Look great" type="text" required>
+                        <input id="review-title" name="title" class="form-control form-control-sm py-2 rounded-0" type="text" required>
                     </div>
                     <div class="mb-3">
                         <label for="review-message" role="button" class="fw-medium mb-2 text-muted">Review Content*</label>

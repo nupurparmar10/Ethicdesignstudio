@@ -182,9 +182,10 @@ if (isset($_REQUEST['s3'])) {
             var $tr = $table.find('tr').eq(1).clone();
             $tr.attr("id", counter);
             $tr.find('select').eq(0).attr("id", "v" + counter);
-            $tr.appendTo($table).find('input').val('');
-            $tr.appendTo($table).find('select').eq(0).val('');
-            $tr.appendTo($table).find('select').eq(1).val('');
+            $tr.find('input').val('');
+            $tr.find('select').eq(0).val('');
+            $tr.find('select').eq(1).val('');
+            $tr.append('<td style="vertical-align: middle; text-align: center;"><a href="javascript:void(0);" onclick="$(this).closest(\'tr\').remove(); calc();" style="color: red; font-size: 24px; font-weight: bold; text-decoration: none;" title="Remove">&times;</a></td>');
             $("#input_fields").append($tr);
             counter++;
         }
