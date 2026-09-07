@@ -389,7 +389,7 @@ if (isset($_REQUEST['msg1'])) {
 
 																		<button class="btn btn-danger btn-rounded btn-condensed btn-sm"
 																			type="button"
-																			onclick="if(confirm('Are you sure you want to delete this variant?')) window.location.href='viewproduct1.php?val=<?php echo $d[0]; ?>';">
+																			onclick="deleteVariant(<?php echo $d[0]; ?>, this);">
 																			<span class="fa fa-trash" title="Delete variant"></span>
 																		</button>
 
@@ -774,7 +774,76 @@ if (isset($_REQUEST['msg1'])) {
 		function ajaxError() {
 			alert("error");
 		}
+		function deleteVariant(v_id, btn) {
+			if (!confirm('Are you sure you want to delete this variant?')) return;
+
+			// Disable button to prevent double-clicks
+			btn.disabled = true;
+
+			fetch('delete_variant.php', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: 'v_id=' + encodeURIComponent(v_id)
+			})
+			.then(function(response) { return response.json(); })
+			.then(function(data) {
+				if (data.success) {
+					// Remove the row from the DataTable without reloading
+					var $row = $(btn).closest('tr');
+					var dtTable = $('#viewproduct-display-table').dataTable();
+					dtTable.fnDeleteRow($row[0]);
+					// Re-sequence the S.No. column after deletion
+					renumberVariantRows(dtTable);
+					showVariantToast(data.message, 'success');
+				} else {
+					btn.disabled = false;
+					showVariantToast(data.message || 'Failed to delete variant.', 'error');
+				}
+			})
+			.catch(function() {
+				btn.disabled = false;
+				showVariantToast('An error occurred. Please try again.', 'error');
+			});
+		}
+
+		function renumberVariantRows(dtTable) {
+			// Iterate all rows currently in the DataTable body and update S.No. (column index 1)
+			$(dtTable).find('tbody tr').each(function(index) {
+				$(this).find('td').eq(1).text(index + 1);
+			});
+		}
+
+		function showVariantToast(message, type) {
+			var toast = document.getElementById('variant-delete-toast');
+			toast.textContent = message;
+			toast.className = 'variant-toast variant-toast-' + type + ' variant-toast-show';
+			setTimeout(function() {
+				toast.className = toast.className.replace('variant-toast-show', '');
+			}, 3000);
+		}
 	</script>
+	<div id="variant-delete-toast" class="variant-toast"></div>
+	<style>
+		.variant-toast {
+			position: fixed;
+			bottom: 30px;
+			right: 30px;
+			z-index: 99999;
+			padding: 12px 22px;
+			border-radius: 5px;
+			font-size: 14px;
+			font-weight: bold;
+			color: #fff;
+			opacity: 0;
+			transition: opacity 0.4s ease;
+			pointer-events: none;
+		}
+		.variant-toast-show {
+			opacity: 1;
+		}
+		.variant-toast-success { background: #27ae60; }
+		.variant-toast-error   { background: #c0392b; }
+	</style>
 	<script>
 		$(document).on('change', '.label-select', function () {
 			var v_id = $(this).data('vid');

@@ -218,7 +218,7 @@ var counter=1;
                                                                             ?>
                                                                         </select></td>
                                                                         <td> <div class="form-group">
-																			<input type="number" class="form-control" name="qty[]" onkeyup="calc(); chk_qty(this);" min='1' id="qty1"/>
+																			<input type="number" class="form-control" name="qty[]" onkeyup="calc(); chk_qty(this);" step="any" id="qty1"/>
 																		</div></td>
                                                                         <td> <div class="form-group">
 																			<input type="number" class="form-control" name="rate[]" onkeyup="calc();"/>
