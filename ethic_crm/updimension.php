@@ -184,11 +184,11 @@ if (isset($_POST['submit'])) {
                                             <tbody>
                                                 <?php foreach ($data as $id => $type) { ?>
                                                     <tr>
-                                                        <td><input type="number" class="form-control" name="min_quantity_<?php echo $id; ?>" value="<?php echo htmlspecialchars($type['min_quantity']); ?>" required /></td>
-                                                        <td><input type="number" class="form-control" name="max_quantity_<?php echo $id; ?>" value="<?php echo htmlspecialchars($type['max_quantity']); ?>" required /></td>
-                                                        <td><input type="number" class="form-control" name="height_<?php echo $id; ?>" value="<?php echo htmlspecialchars($type['height']); ?>" required /></td>
-                                                        <td><input type="number" class="form-control" name="width_<?php echo $id; ?>" value="<?php echo htmlspecialchars($type['width']); ?>" required /></td>
-                                                        <td><input type="number" class="form-control" name="length_<?php echo $id; ?>" value="<?php echo htmlspecialchars($type['length']); ?>" required /></td>
+                                                        <td><input type="number"  step="any" class="form-control" name="min_quantity_<?php echo $id; ?>" value="<?php echo htmlspecialchars($type['min_quantity']); ?>" required /></td>
+                                                        <td><input type="number"  step="any" class="form-control" name="max_quantity_<?php echo $id; ?>" value="<?php echo htmlspecialchars($type['max_quantity']); ?>" required /></td>
+                                                        <td><input type="number"  step="any" class="form-control" name="height_<?php echo $id; ?>" value="<?php echo htmlspecialchars($type['height']); ?>" required /></td>
+                                                        <td><input type="number"  step="any" class="form-control" name="width_<?php echo $id; ?>" value="<?php echo htmlspecialchars($type['width']); ?>" required /></td>
+                                                        <td><input type="number"  step="any" class="form-control" name="length_<?php echo $id; ?>" value="<?php echo htmlspecialchars($type['length']); ?>" required /></td>
                                                         <td>
                                                             <button type="button" onclick="updateValue('<?php echo $id; ?>')" class="btn btn-primary btn-block">
                                                                 <i class="fa fa-save"></i>

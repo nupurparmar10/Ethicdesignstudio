@@ -99,18 +99,26 @@
 <script>
 
 var counter=1;
- function more() {
+  function more() {
             counter++;
 
 			var $table = $('#input_fields');
-            var $tr = $table.find('tr').eq(1).clone();
-            $tr.appendTo($table).find('input').val('');
-			$tr.appendTo($table).find('select').eq(0).val('');
-            $tr.appendTo($table).find('select').eq(0).attr('id',"item_id"+counter);
-            $tr.appendTo($table).find('input').eq(0).attr('id',"qty"+counter);
-            $("#input_fields").append($tr);
-            $tr.appendTo($table).find('select').eq(0).focus();
+            var $tr = $table.find('tbody tr:first').clone();
+            $tr.find('input').val('');
+			$tr.find('select').eq(0).val('');
+            $tr.find('select').eq(0).attr('id',"item_id"+counter);
+            $tr.find('input').eq(0).attr('id',"qty"+counter);
+            
+            $tr.find('td:last').css({'vertical-align': 'middle', 'text-align': 'center'}).html('<a href="javascript:void(0);" class="remove-row" tabindex="-1" style="color: red; font-size: 24px; font-weight: bold; text-decoration: none;" title="Remove">&times;</a>');
+            
+            $table.find('tbody').append($tr);
+            $tr.find('select').eq(0).focus();
   }
+
+  $(document).on('click', '.remove-row', function() {
+      $(this).closest('tr').remove();
+      calc();
+  });
   </script>
     </head>
     <body>
@@ -203,6 +211,7 @@ var counter=1;
                                                                     <th>No. of MTR</th>
                                                                     <th>Rate</th>
                                                                     <th>Cost</th>
+                                                                    <th></th>
                                                                 </thead>
                                                                 <tbody>
                                                                     <tr>
@@ -213,7 +222,7 @@ var counter=1;
                                                                                 while($f=mysqli_fetch_row($f1))
                                                                                 {
 																					$item=mysqli_fetch_row(mysqli_query($con,"select * from item_details where item_id='$f[1]'"));
-                                                                                    echo "<option value='$f[0]-$f[5]-$f[6]'>$item[1]-$f[3]</option>";
+                                                                                    echo "<option value='$f[0]-$f[5]-$f[6]'>$item[1]-$item[5]-$f[3]</option>";
                                                                                 }
                                                                             ?>
                                                                         </select></td>
@@ -221,19 +230,23 @@ var counter=1;
 																			<input type="number" class="form-control" name="qty[]" onkeyup="calc(); chk_qty(this);" step="any" id="qty1"/>
 																		</div></td>
                                                                         <td> <div class="form-group">
-																			<input type="number" class="form-control" name="rate[]" onkeyup="calc();"/>
+																			<input type="number" class="form-control" name="rate[]" step="any"  step="any" onkeyup="calc();"/>
 																		</div></td>
                                                                         <td> <div class="form-group">
-																			<input type="number" class="form-control" name="cost[]" onkeyup="calc();"/>
+																			<input type="number" class="form-control" name="cost[]"  step="any"  step="any" onkeyup="calc();"/>
 																		</div></td>
+                                                                        <td></td>
                                                                     </tr>
                                                                 </tbody>
+                                                                <tfoot>
                                                                 <tr>
                                                                     <td colspan='3' align='right'>Total</td>
                                                                     <td> <div class="form-group">
 																		<input type="text" class="form-control" name="costtot" onkeyup="calc();" id="costtot"/>
 																	</div></td>
+                                                                    <td></td>
                                                                 </tr>
+                                                                </tfoot>
                                                             </table>
                                                             </div>
                                                             <button class="btn btn-primary" onClick="more();" type="button">Add More</button> 

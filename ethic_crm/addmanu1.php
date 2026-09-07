@@ -98,18 +98,25 @@
 </script>
 <script>
     var counter=1;
- function more() {
-    counter++;
+  function more() {
+            counter++;
 			var $table = $('#input_fields');
-            var $tr = $table.find('tr').eq(1).clone();
-            $tr.appendTo($table).find('input').val('');
-			$tr.appendTo($table).find('select').eq(0).val('');
-            $tr.appendTo($table).find('select').eq(0).attr('id',"item_id"+counter);
-            $tr.appendTo($table).find('input').eq(0).attr('id',"qty"+counter);
-            $("#input_fields").append($tr);
-            $tr.appendTo($table).find('select').eq(0).focus();
-			counter++;
+            var $tr = $table.find('tbody tr:first').clone();
+            $tr.find('input').val('');
+			$tr.find('select').eq(0).val('');
+            $tr.find('select').eq(0).attr('id',"item_id"+counter);
+            $tr.find('input').eq(0).attr('id',"qty"+counter);
+            
+            $tr.find('td:last').css({'vertical-align': 'middle', 'text-align': 'center'}).html('<a href="javascript:void(0);" class="remove-row" tabindex="-1" style="color: red; font-size: 24px; font-weight: bold; text-decoration: none;" title="Remove">&times;</a>');
+            
+            $table.find('tbody').append($tr);
+            $tr.find('select').eq(0).focus();
   }
+
+  $(document).on('click', '.remove-row', function() {
+      $(this).closest('tr').remove();
+      calc();
+  });
   </script>
     </head>
     <body>
@@ -208,6 +215,7 @@
                                                                     <Th>Rate</th>
                                                                     <Th>Amount</th>
                                                                     <th>Remark</th>
+                                                                    <th></th>
                                                                 </thead>
                                                                 <tbody>
                                                                     <tr>
@@ -226,23 +234,27 @@
 																			<input type="number" class="form-control" name="qty[]" onkeyup="calc(); chk_qty(this);" min='1' id="qty1"/>
 																		</div></td>
                                                                         <td> <div class="form-group">
-																			<input type="number" class="form-control" name="rate[]" onkeyup="calc();"/>
+																			<input type="number" class="form-control" name="rate[]" onkeyup="calc();"  step="any"/>
 																		</div></td>
                                                                         <td> <div class="form-group">
-																			<input type="number" class="form-control" name="cost[]" onkeyup="calc();"/>
+																			<input type="number" class="form-control" name="cost[]" onkeyup="calc();"  step="any"/>
 																		</div></td>
                                                                         <td> <div class="form-group">
 																			<input type="text" class="form-control" name="remarks[]" />
 																		</div></td>
+                                                                        <td></td>
                                                                     </tr>
                                                                 </tbody>
+                                                                <tfoot>
                                                                 <tr>
                                                                     <td colspan='3' align='right'>Total</td>
                                                                     <td> <div class="form-group">
 																		<input type="text" class="form-control" name="costtot" onkeyup="calc();" id="costtot"/>
 																	</div></td>
                                                                     <td></td>
+                                                                    <td></td>
                                                                 </tr>
+                                                                </tfoot>
                                                             </table>
                                                             </div>
                                                             <button class="btn btn-primary" onClick="more();" type="button">Add More</button> 

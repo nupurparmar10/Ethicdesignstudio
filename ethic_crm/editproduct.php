@@ -65,9 +65,11 @@ if (isset($_REQUEST['s3'])) {
 
             $result = mysqli_query($con, "SELECT v_id FROM variant WHERE v_id='$v_id'");
             if (mysqli_num_rows($result) > 0) {
-                mysqli_query($con, "update variant set  size='$size', color='$color',stock='$stock',webstock='$webstock',purrate='$purrate',edsellrate='$edsellrate',standard_color='$standard_color' where v_id='$v_id'");
+                $concatenated_color = $color . " " . $standard_color;
+                mysqli_query($con, "update variant set  size='$size', color='$concatenated_color',stock='$stock',webstock='$webstock',purrate='$purrate',edsellrate='$edsellrate',standard_color='$standard_color' where v_id='$v_id'");
             } else {
-                mysqli_query($con, "insert into variant set item_id ='$_REQUEST[item_id]', size='$size', color='$color',stock='$stock',webstock='$webstock',purrate='$purrate',edsellrate='$edsellrate',standard_color='$standard_color'");
+                $concatenated_color = $color . " " . $standard_color;
+                mysqli_query($con, "insert into variant set item_id ='$_REQUEST[item_id]', size='$size', color='$concatenated_color',stock='$stock',webstock='$webstock',purrate='$purrate',edsellrate='$edsellrate',standard_color='$standard_color'");
                 $new_v_id = mysqli_insert_id($con);
                 $barcode = encryptId($new_v_id);
                 mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$new_v_id'");
@@ -532,12 +534,12 @@ if (isset($_REQUEST['s3'])) {
                                                                                                 </td>
                                                                                                 <td>
                                                                                                     <div class="form-group">
-                                                                                                        <input type="number" class="form-control" name="webstock[]" value="<?php echo $k[7]; ?>" onkeyup="calc();" />
+                                                                                                        <input type="number" class="form-control" name="webstock[]" value="<?php echo $k[7]; ?>" onkeyup="calc();"  />
                                                                                                     </div>
                                                                                                 </td>
                                                                                                 <td>
                                                                                                     <div class="form-group">
-                                                                                                        <input type="text" class="form-control" name="purrate[]" value="<?php echo $k[4]; ?>" onkeyup="calc();" />
+                                                                                                        <input type="text" class="form-control" name="purrate[]" value="<?php echo $k[4]; ?>" onkeyup="calc();"  step="any" />
                                                                                                     </div>
                                                                                                 </td>
                                                                                                 <td>

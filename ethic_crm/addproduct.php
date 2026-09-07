@@ -352,12 +352,13 @@ if (isset($_REQUEST['s1']))
 				$edsellrate = floatval($_REQUEST['edsellrate'][$itemid][$variant_index] ?? $variant['edsellrate']);
 				$tax = floatval($_REQUEST['taxper'][$itemid][$variant_index] ?? $product['tax_percent']);
 				if ($stock > 0) {
+                    $concatenated_color = $variant['color'] . " " . $variant['standard_color'];
 					mysqli_stmt_bind_param(
 						$stmt_variant,
 						'isssiids',
 						$actual_item_id,
 						$variant['size'],
-						$variant['color'],
+						$concatenated_color,
 						$stock,
 						$webstock,
 						$purerate,

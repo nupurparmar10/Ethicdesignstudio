@@ -221,43 +221,51 @@ foreach($v_ids as $index => $v_id)
 	$name  = "i".$i;
 	$name1 = "barcode".$i;
 
-	if($v[2] != "")
-    {
-        // if long text then remove <br>
-        if(strlen($ps[2]) > 25)
-        {
-            $value =
-            "$s[1]-$ps[2] $v[3]-$v[2]<br>
-            M.R.P $v[5]/-";
-        }
-        else
-        {
-            $value =
-            "$s[1]-$ps[2]<br>
-            $v[3]-$v[2]<br>
-            M.R.P $v[5]/-";
-        }
-    
-        $barcode = $v['barcode'];
-    }
-    else
-    {
-        if(strlen($ps[2]) > 25)
-        {
-            $value =
-            "$s[1]-$ps[2] $v[3]<br>
-            M.R.P $v[5]/-";
-        }
-        else
-        {
-            $value =
-            "$s[1]-$ps[2]<br>
-            $v[3]<br>
-            M.R.P $v[5]/-";
-        }
-    
-        $barcode = $v['barcode'];
-    }
+	if($s[2]=='Fabric')
+	{
+		$value = "$s[1]-$s[5]<br>$v[3]<br>M.R.P $v[5]/- ";
+		$barcode = $v['barcode'];
+	}
+	else
+	{
+		if($v[2] != "")
+		{
+			// if long text then remove <br>
+			if(strlen($ps[2]) > 25)
+			{
+				$value =
+				"$s[1]-$ps[2] $v[3]-$v[2]<br>
+				M.R.P $v[5]/-";
+			}
+			else
+			{
+				$value =
+				"$s[1]-$ps[2]<br>
+				$v[3]-$v[2]<br>
+				M.R.P $v[5]/-";
+			}
+		
+			$barcode = $v['barcode'];
+		}
+		else
+		{
+			if(strlen($ps[2]) > 25)
+			{
+				$value =
+				"$s[1]-$ps[2] $v[3]<br>
+				M.R.P $v[5]/-";
+			}
+			else
+			{
+				$value =
+				"$s[1]-$ps[2]<br>
+				$v[3]<br>
+				M.R.P $v[5]/-";
+			}
+		
+			$barcode = $v['barcode'];
+		}
+	}
 ?>
 
 <td>

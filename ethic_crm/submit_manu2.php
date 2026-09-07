@@ -152,7 +152,7 @@
                                                     <tr>
                                                         <th>New Products Received</th>
                                                         <td><div class="form-group">
-                                                            <input type="number" class="form-control" name="newitem" required/>
+                                                            <input type="number"  step="any" class="form-control" name="newitem" required/>
                                                         </div></td>
                                                         <td colspan='2'><button class="btn btn-primary" type="submit" name="p1">Proceed</button></tD>
                                                     </tR>									

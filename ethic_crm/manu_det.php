@@ -329,7 +329,7 @@
                                                                                         <input type="text" class="form-control" name="sellcost<?php echo $i; ?>[]" onkeyup="calc(<?php echo $i; ?>);" readonly style='color:black;' />
                                                                                     </div></td>
                                                                                     <td> <div class="form-group">
-                                                                                        <input type="number" class="form-control" name="edsellrate<?php echo $i; ?>[]" onkeyup="calc(<?php echo $i; ?>);" value='<?php echo $v[7]; ?>' readonly style='color:black;' />
+                                                                                        <input type="number"  step="any" class="form-control" name="edsellrate<?php echo $i; ?>[]" onkeyup="calc(<?php echo $i; ?>);" value='<?php echo $v[7]; ?>' readonly style='color:black;' />
                                                                                     </div></td>
                                                                                 </tr>
                                                                                 <?php

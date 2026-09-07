@@ -187,26 +187,26 @@
                                                                     <tr>
                                                                         <td><?php echo "$item[1]-$f[3]-$f[2]"; ?></td>
                                                                         <td> <div class="form-group">
-																			<input type="number" class="form-control" name="qty[]" onkeyup="calc();" value="<?php echo $d[3]; ?>" readonly style='color:black;' step="0.01" />
+																			<input type="number"   step="any" class="form-control" name="qty[]" onkeyup="calc();" value="<?php echo $d[3]; ?>" readonly style='color:black;' step="0.01" />
 																		</div></td>
                                                                         <td> <div class="form-group">
-																			<input type="number" class="form-control" name="rate[]" onkeyup="calc();" value="<?php echo $d[4]; ?>" readonly style='color:black; width:100px; ' step="0.01"/>
+																			<input type="number"  step="any" class="form-control" name="rate[]" onkeyup="calc();" value="<?php echo $d[4]; ?>" readonly style='color:black; width:100px; ' step="0.01"/>
 																		</div></td>
                                                                         <td><?php echo $d[5]; ?></td>
                                                                         <td> <div class="form-group">
-																			<input type="number" class="form-control" name="cost[]" onkeyup="calc();" step="0.01"/>
+																			<input type="number"  step="any" class="form-control" name="cost[]" onkeyup="calc();" step="0.01"/>
 																		</div></td>
                                                                         <td> <div class="form-group">
-																			<input type="number" class="form-control" name="newcost[]" onkeyup="calc();" step="0.01"/>
+																			<input type="number"  step="any" class="form-control" name="newcost[]" onkeyup="calc();" step="0.01"/>
 																		</div></td>
                                                                         <td> <div class="form-group">
-																			<input type="number" class="form-control" name="taxper[]" onkeyup="calc();" step="0.01"/>
+																			<input type="number"  step="any" class="form-control" name="taxper[]" onkeyup="calc();" step="0.01"/>
 																		</div></td>
                                                                         <td> <div class="form-group">
-																			<input type="number" class="form-control" name="sellcost[]" onkeyup="calc();" step="0.01"/>
+																			<input type="number"  step="any" class="form-control" name="sellcost[]" onkeyup="calc();" step="0.01"/>
 																		</div></td>
                                                                         <td> <div class="form-group">
-																			<input type="number" class="form-control" name="edsellrate[]" onkeyup="calc();" step="0.01"/>
+																			<input type="number"  step="any" class="form-control" name="edsellrate[]" onkeyup="calc();" step="0.01"/>
 																		</div></td>
                                                                     </tr>
                                                                     <?php

@@ -293,9 +293,8 @@ if (isset($_REQUEST['msg1'])) {
 													<th>Type</th>
 													<th>Sub-Category</th>
 													<th>Description</th>
-													<th>HSN</th>
-													<th>Unit</th>
 													<th>Size</th>
+													<th>Standard Color</th>
 													<th>Color</th>
 													<th>Stock in Store</th>
 													<th>Stock in Website</th>
@@ -332,9 +331,8 @@ if (isset($_REQUEST['msg1'])) {
 															<th>Type</th>
 															<th>Sub-Category</th>
 															<th>Description</th>
-															<th>HSN</th>
-															<th>Unit</th>
 															<th>Size</th>
+															<th>Standard Color</th>
 															<th>Color</th>
 															<th>Stock in<br>Store</th>
 															<th>Stock in<br>Website</th>
@@ -447,27 +445,25 @@ if (isset($_REQUEST['msg1'])) {
 																	<td><?php echo htmlspecialchars($item[2]); ?></td>
 																	<td><?php echo $sub_cat[2]; ?></td>
 																	<td><?php echo htmlspecialchars("$item[5]"); ?></td>
-																	<td><?php echo $item[4]; ?></td>
-																	<td><?php echo $item[6]; ?></td>
+																	<td align='right'><?php echo $d[2]; ?></td>
+																	<td><?php echo htmlspecialchars($d[9]); ?></td>
 																	<?php
 																	$table .= "<td>$j</td>
 																				<td>$item[1]</td>
 																				<td>$item[2]</td>
 																				<td>$sub_cat[2]</td>
 																				<td>" . htmlspecialchars("$item[5]") . "</td>
-																				<td>$item[4]</td>
-																				<td>$item[6]</td>";
+																				<td align='right'>$d[2]</td>
+																				<td>" . htmlspecialchars($d[9]) . "</td>";
 
-																	echo "<td align='right'>$d[2]</td>
-																			<td align='right'>$d[3]</td>
+																	echo "<td align='right'>$d[3]</td>
 																			<td align='right'>$d[6]</td>
 																			<td align='right'>$d[7]</td>
 																			<td align='right'>$d[4]</td>
 																			
 																			";
 
-																	$table .= "<td align='right'>$d[2]</td>
-																				<td align='right'>$d[3]</td>
+																	$table .= "<td align='right'>$d[3]</td>
 																				<td align='right'>$d[6]</td>
 																				<td align='right'>$d[7]</td>
 																				<td align='right'>$d[4]</td>
@@ -542,26 +538,26 @@ if (isset($_REQUEST['msg1'])) {
 															} while ($d = mysqli_fetch_array($result));
 														}
 														$table .= "<tr>
-																<td colspan='14'>Total</td>
+																<td colspan='8'>Total</td>
 																<td align='right'>" . round($tot[0], 2) . "</td>
 																<td align='right'>" . round($tot[1], 2) . "</td>
 																<td></td>
 																<td align='right'>" . round($tot[2], 2) . "</td>
 																<td align='right'>" . round($tot[3], 2) . "</td>
 																<td align='right'>" . round($tot[4], 2) . "</td>
-																<td colspan='3'></td>
+																<td colspan='4'></td>
 															</tr></table>";
 
 														echo "</tbody>
 																<tr style='font-weight:bold;'>
-																<td colspan='14'>Total</td>
+																<td colspan='13'>Total</td>
 																<td align='right'>" . round($tot[0], 2) . "</td>
 																<td align='right'>" . round($tot[1], 2) . "</td>
 																<td></td>
 																<td align='right'>" . round($tot[2], 2) . "</td>
 																<td align='right'>" . round($tot[3], 2) . "</td>
 																<td align='right'>" . round($tot[4], 2) . "</td>
-																<td colspan='3'></td>
+																<td colspan='4'></td>
 																</tr>";
 														?>
 

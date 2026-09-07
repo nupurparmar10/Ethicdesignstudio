@@ -179,7 +179,7 @@
 													</select>     
 												</div>
                                                 <div class="col-md-2 col-xs-12">  
-													<input type="number" class="form-control" name="year" id="year" value="<?php echo date("Y"); ?>" onkeyup="gensalary();"/>
+													<input type="number"  step="any" class="form-control" name="year" id="year" value="<?php echo date("Y"); ?>" onkeyup="gensalary();"/>
 												</div>
 											</div>
 									</div>

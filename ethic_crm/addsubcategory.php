@@ -193,7 +193,7 @@ if (isset($_REQUEST['s3'])) {
                                         <div class="col-md-6 col-xs-12">
                                             <div class="input-group">
                                                 <span class="input-group-addon"><span class="fa fa-pencil"></span></span>
-                                                <input type="number" class="form-control" name="weight" required value='<?php echo $c[4]; ?>' />
+                                                <input type="number" class="form-control"  step="any" name="weight" required value='<?php echo $c[4]; ?>' />
                                             </div>
                                         </div>
                                     </div>

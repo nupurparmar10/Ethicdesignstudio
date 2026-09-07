@@ -36,10 +36,12 @@
                 {
                     $size = $_REQUEST['size'.$new][$i];
                     $color = $_REQUEST['color'.$new][$i];
+                    $standard_color = $_REQUEST['standard_color'.$new][$i];
+                    $concatenated_color = $color . " " . $standard_color;
                     $edsellrate= $_REQUEST['edsellrate'.$new][$i];
-                    mysqli_query($con,"insert into variant set item_id =$itemid, size='$size', color='$color',stock='$qty',webstock='0',purrate='0',edsellrate='$edsellrate'");
+                    mysqli_query($con,"insert into variant set item_id =$itemid, size='$size', color='$concatenated_color',stock='$qty',webstock='0',purrate='0',edsellrate='$edsellrate',standard_color='$standard_color'");
 
-                    $v=mysqli_fetch_row(mysqli_query($con,"select v_id from variant where item_id =$itemid and size='$size' and color='$color'"));
+                    $v=mysqli_fetch_row(mysqli_query($con,"select v_id from variant where item_id =$itemid and size='$size' and color='$concatenated_color'"));
                     $barcode = encryptId($v[0]);
                     mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$v[0]'");
                     $fabric_cost=$_REQUEST['fabric_cost'.$new][$i];
@@ -413,6 +415,7 @@
                                                                             <thead>
                                                                                 <th>Size</th>
                                                                                 <th>Color</th>
+                                                                                <th>Standard Color</th>
                                                                                 <th>Qty</th>
                                                                                 <Th>Fabric Cost/Pcs</th>
                                                                                 <th>Manufacturing Cost/Pcs</th>
@@ -446,6 +449,19 @@
                                                                                     </td>
                                                                                     <td> 
                                                                                         <div class="form-group">
+                                                                                            <select class="form-control" name="standard_color<?php echo $i; ?>[]">
+                                                                                                <option value="">--Select--</option>
+                                                                                                <?php
+                                                                                                $c1 = mysqli_query($con, "Select * from color_code order by color_name");
+                                                                                                while ($c = mysqli_fetch_assoc($c1)) {
+                                                                                                    echo "<option value='{$c['color_name']}'>{$c['color_name']}</option>";
+                                                                                                }
+                                                                                                ?>
+                                                                                            </select>
+                                                                                        </div>
+                                                                                    </td>
+                                                                                    <td> 
+                                                                                        <div class="form-group">
                                                                                         <input type="text" class="form-control" name="qty<?php echo $i; ?>[]" onkeyup="calc1(<?php echo $i; ?>); getcost();"/>
                                                                                         </div>
                                                                                     </td>
@@ -475,7 +491,7 @@
                                                                                         <input type="text" class="form-control" name="sellcost<?php echo $i; ?>[]" onkeyup="calc(<?php echo $i; ?>);"/>
                                                                                     </div></td>
                                                                                     <td> <div class="form-group">
-                                                                                        <input type="number" class="form-control" name="edsellrate<?php echo $i; ?>[]" onkeyup="calc(<?php echo $i; ?>);"/>
+                                                                                        <input type="number"  step="any" class="form-control" name="edsellrate<?php echo $i; ?>[]" onkeyup="calc(<?php echo $i; ?>);"/>
                                                                                     </div></td>
                                                                                 </tr>
                                                                             </tbody>
