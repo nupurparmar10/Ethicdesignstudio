@@ -411,8 +411,7 @@ $d=mysqli_fetch_row($d1);
 	$amt1=0;
 	$tot=0;
 	$dis=0;
-	$sgst=0;
-	$cgst=0;
+	$igst=0;
 	$j=1;
 	$taxableamt28=0;
 	$taxableamt18=0;
@@ -488,16 +487,15 @@ $d=mysqli_fetch_row($d1);
     <thead>
       <tr>
         <th style="width:5%;">S.No.</th>
-        <th style="width:23%;">Description of Goods<br><span style="font-weight:400;font-size:6.2pt;text-transform:none;">(Code - Name - Variant)</span></th>
-        <th style="width:7%;">HSN</th>
-        <th style="width:5%;">Qty</th>
-        <th style="width:6%;">Unit</th>
-        <th style="width:8%;">MRP</th>
-        <th style="width:8%;">Disc (₹)</th>
-        <th style="width:8%;">Rate (₹)</th>
-        <th style="width:6%;">Tax (%)</th>
-        <th style="width:7%;">CGST</th>
-        <th style="width:7%;">SGST</th>
+        <th style="width:27%;">Description of Goods<br><span style="font-weight:400;font-size:6.2pt;text-transform:none;">(Code - Name - Variant)</span></th>
+        <th style="width:8%;">HSN</th>
+        <th style="width:6%;">Qty</th>
+        <th style="width:8%;">Unit</th>
+        <th style="width:9%;">MRP</th>
+        <th style="width:9%;">Disc (₹)</th>
+        <th style="width:9%;">Rate (₹)</th>
+        <th style="width:7%;">Tax (%)</th>
+        <th style="width:7%;">IGST</th>
         <th style="width:10%;">Amount (₹)</th>
       </tr>
     </thead>
@@ -530,8 +528,7 @@ $d=mysqli_fetch_row($d1);
             $v1=$amt*$pro[5]/100;
             $amt=$amt+$v1;
             
-            $sgst+=$v1/2;
-            $cgst+=$v1/2;						
+            $igst+=$v1;						
                                     
             $tot+=$amt;
       ?>
@@ -545,34 +542,32 @@ $d=mysqli_fetch_row($d1);
         <td class="num"><?php echo number_format($d1_discount,2); ?></td>
         <td class="num"><?php echo number_format($pro[3],2); ?></td>
         <td><?php echo $pro[5]; ?></td>
-        <td class="num"><?php echo number_format($v1/2,2); ?></td>
-        <td class="num"><?php echo number_format($v1/2,2); ?></td>
+        <td class="num"><?php echo number_format($v1,2); ?></td>
         <td class="num"><?php echo number_format($amt,2); ?></td>
       </tr>
       <?php
             $j++;
         }
       ?>
-      <tr class="filler"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr class="filler"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
     </tbody>
   </table>
 
   <?php if($i == $count) { 
         $dis1=$dis;
-        $vat1=number_format($sgst,2);
-        $vat2=number_format($cgst,2);
-        $vattot=($sgst+$cgst);
+        $vat1=number_format($igst,2);
+        $vattot=($igst);
   ?>
   <div class="totals-wrap">
     <table class="gst-table">
       <thead>
-        <tr><th style="width:18%;">GST %</th><th>Taxable Amount</th><th>CGST</th><th>SGST</th></tr>
+        <tr><th style="width:22%;">GST %</th><th>Taxable Amount</th><th>IGST</th></tr>
       </thead>
       <tbody>
-        <tr><td class="pct">5%</td><td><?php echo number_format($taxableamt5,2); ?></td><td><?php echo number_format(($taxableamt5*5/100)/2,2); ?></td><td><?php echo number_format(($taxableamt5*5/100)/2,2); ?></td></tr>
-        <tr><td class="pct">12%</td><td><?php echo number_format($taxableamt12,2); ?></td><td><?php echo number_format(($taxableamt12*12/100)/2,2); ?></td><td><?php echo number_format(($taxableamt12*12/100)/2,2); ?></td></tr>
-        <tr><td class="pct">18%</td><td><?php echo number_format($taxableamt18,2); ?></td><td><?php echo number_format(($taxableamt18*18/100)/2,2); ?></td><td><?php echo number_format(($taxableamt18*18/100)/2,2); ?></td></tr>
-        <tr><td class="pct">28%</td><td><?php echo number_format($taxableamt28,2); ?></td><td><?php echo number_format(($taxableamt28*28/100)/2,2); ?></td><td><?php echo number_format(($taxableamt28*28/100)/2,2); ?></td></tr>
+        <tr><td class="pct">5%</td><td><?php echo number_format($taxableamt5,2); ?></td><td><?php echo number_format(($taxableamt5*5/100),2); ?></td></tr>
+        <tr><td class="pct">12%</td><td><?php echo number_format($taxableamt12,2); ?></td><td><?php echo number_format(($taxableamt12*12/100),2); ?></td></tr>
+        <tr><td class="pct">18%</td><td><?php echo number_format($taxableamt18,2); ?></td><td><?php echo number_format(($taxableamt18*18/100),2); ?></td></tr>
+        <tr><td class="pct">28%</td><td><?php echo number_format($taxableamt28,2); ?></td><td><?php echo number_format(($taxableamt28*28/100),2); ?></td></tr>
       </tbody>
     </table>
 
