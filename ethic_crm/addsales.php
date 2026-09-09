@@ -226,7 +226,12 @@ $f1 = mysqli_query($con, "select * from variant where item_id in (select item_id
 $query = "";
 while ($f = mysqli_fetch_row($f1)) {
 	$c = mysqli_fetch_row(mysqli_query($con, "select * from item_details where item_id='$f[1]'"));
-	$query .= "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]'>" . htmlspecialchars("$c[1]-$c[5] $f[2] $f[3]") . "</option>";
+	if ($c[2] == 'Fabric') {
+		$option_text = htmlspecialchars("$c[1]-$c[5]-$f[3]");
+	} else {
+		$option_text = htmlspecialchars("$c[1]-$c[5]-$f[2]-$f[3]");
+	}
+	$query .= "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]'>" . $option_text . "</option>";
 }
 ?>
 
@@ -770,10 +775,17 @@ while ($f = mysqli_fetch_row($f1)) {
 																											$f1 = mysqli_query($con, "select * from variant where item_id in (select item_id from item_details where status=1) order by v_id");
 																											while ($f = mysqli_fetch_row($f1)) {
 																												$c = mysqli_fetch_row(mysqli_query($con, "select * from item_details where item_id='$f[1]'"));
+																												
+																												if ($c[2] == 'Fabric') {
+																													$option_text = htmlspecialchars("$c[1]-$c[5]-$f[3]");
+																												} else {
+																													$option_text = htmlspecialchars("$c[1]-$c[5]-$f[2]-$f[3]");
+																												}
+
 																												if ($k[1] == $f[0])
-																													echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]' selected>" . htmlspecialchars("$c[1]-$c[5] $f[2] $f[3]") . "</option>";
+																													echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]' selected>" . $option_text . "</option>";
 																												else
-																													echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]'>" . htmlspecialchars("$c[1]-$c[5] $f[2] $f[3]") . "</option>";
+																													echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]'>" . $option_text . "</option>";
 																											}
 																											?>
 																										</select>

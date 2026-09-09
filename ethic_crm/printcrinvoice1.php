@@ -535,7 +535,7 @@ $d=mysqli_fetch_row($d1);
 				  <tr height="1px" style='line-height:10px;'>
 					<td colspan='4' style="text-transform:uppercase;"><b><?php echo $d[18]; ?> :</b></td>
 					<td align='right'><strong>
-                      <?php $tot=$tot+$d[12]; echo number_format($d[10],2); ?>
+                      <?php $tot=$tot+$d[10]; echo number_format($d[10],2); ?>
                     </strong></td>
 				  </tr>
 				  <tr height="1px" style='line-height:10px;'>
@@ -545,6 +545,7 @@ $d=mysqli_fetch_row($d1);
                     </strong></td>
 				  </tr>
 				<?php
+				echo $tot;
 					$round1=round($tot,0);
 					$r=$round1-$tot;
 					$grand=$tot+$r;

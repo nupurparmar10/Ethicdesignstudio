@@ -249,7 +249,12 @@
 	while($f=mysqli_fetch_row($f1))
 	{
 		$c=mysqli_fetch_row(mysqli_query($con,"select * from item_details where item_id='$f[1]'"));
-		$query .= "<option value='$f[0]-$f[5]-$c[7]-$f[6]'>".htmlspecialchars("$c[1]-$c[5] $f[2] $f[3]")."</option>";
+		if ($c[2] == 'Fabric') {
+			$option_text = htmlspecialchars("$c[1]-$c[5]-$f[3]");
+		} else {
+			$option_text = htmlspecialchars("$c[1]-$c[5]-$f[2]-$f[3]");
+		}
+		$query .= "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]'>".$option_text."</option>";
 	}
 ?>
 <!DOCTYPE html>
@@ -399,6 +404,188 @@
         document.getElementById(qty).value = '';
     	}
 	}
+
+		function clearRowFields(selectEl) {
+			var selects = document.getElementsByName('item_id[]');
+			var mrp = document.getElementsByName('mrp[]');
+			var qty = document.getElementsByName('qty[]');
+			var rate = document.getElementsByName('rate[]');
+			var taxper = document.getElementsByName('taxper[]');
+			var taxamt = document.getElementsByName('taxamt[]');
+			var disamt = document.getElementsByName('disamt[]');
+			var amount = document.getElementsByName('amount[]');
+
+			for (var idx = 0; idx < selects.length; idx++) {
+				if (selects[idx] === selectEl) {
+					mrp[idx].value = '';
+					qty[idx].value = '';
+					rate[idx].value = '';
+					taxper[idx].value = '';
+					taxamt[idx].value = '';
+					disamt[idx].value = '';
+					amount[idx].value = '';
+					break;
+				}
+			}
+		}
+
+		function onItemSelect(selectEl) {
+			var value = selectEl.value;
+			if (value === "") {
+				return;
+			}
+
+			var selects = document.getElementsByName('item_id[]');
+			var qtyInputs = document.getElementsByName('qty[]');
+
+			for (var i = 0; i < selects.length; i++) {
+				if (selects[i] !== selectEl && selects[i].value === value) {
+					// Duplicate found - check stock before increasing qty
+					var q = qtyInputs[i];
+					var current = parseFloat(q.value) || 0;
+					var stock = parseFloat(value.split('-')[3]);
+					var newQty = current + 1;
+
+					if (!isNaN(stock) && newQty > stock) {
+						// Would exceed stock: leave existing row's qty exactly as it was, just warn
+						alert("Max available stock for this product is " + stock + ". Quantity not increased.");
+						selectEl.value = "";
+						clearRowFields(selectEl);
+						calc();
+						return;
+					}
+
+					// Within stock: bump existing row's qty instead of adding a new row
+					q.value = newQty;
+					selectEl.value = "";
+					clearRowFields(selectEl);
+					calc();
+					return;
+				}
+			}
+
+			// No duplicate found - proceed as normal
+			getValues1(value);
+			more();
+		}
+
+		function scanBarcode(scannedCode) {
+			scannedCode = $.trim(scannedCode);
+
+			if (!scannedCode) {
+				return;
+			}
+
+			console.log("Scanned:", scannedCode);
+
+			// Find product using data-vid
+			var matchedOption = $("select[name='item_id[]']")
+				.first()
+				.find("option[data-vid='" + scannedCode + "']")
+				.first();
+
+			if (matchedOption.length === 0) {
+				alert("No item found for scanned barcode: " + scannedCode);
+				return;
+			}
+
+			// Find the last empty product select
+			var selectEl = $("select[name='item_id[]']").filter(function () {
+				return $(this).val() === "";
+			}).first();
+
+			// If no empty row exists, use the last select
+			if (selectEl.length === 0) {
+				selectEl = $("select[name='item_id[]']").last();
+			}
+
+			// Set selected product
+			selectEl.val(matchedOption.val());
+
+			// Trigger your existing product selection logic
+			onItemSelect(selectEl[0]);
+		}
+
+		$(document).ready(function () {
+			var $scanInput = $('#scanInput');
+			var scanTimer;
+
+			$scanInput.on('input', function () {
+				clearTimeout(scanTimer);
+
+				var value = $.trim($(this).val());
+
+				if (value === '') {
+					return;
+				}
+
+				// Wait until typing/pasting/scanning has stopped
+				scanTimer = setTimeout(function () {
+					scanBarcode(value);
+					$scanInput.val('');
+					$scanInput.focus();
+				}, 100);
+			});
+
+			// Also support scanners that send Enter
+			$scanInput.on('keypress', function (e) {
+				if (e.which === 13) {
+					e.preventDefault();
+
+					clearTimeout(scanTimer);
+
+					var value = $.trim($(this).val());
+
+					if (value !== '') {
+						scanBarcode(value);
+						$(this).val('');
+					}
+
+					$scanInput.focus();
+				}
+			});
+
+			$scanInput.focus();
+		});
+	function getinvoicedet(val) {
+        $.ajax({
+            url: 'salesajax.php',
+            type: 'POST',
+            data: {
+                party: val
+            },
+            success: ajaxSuccess1,
+            error: ajaxError
+        });
+    }
+
+    function ajaxSuccess1(response) {
+        $('#invoice_html').html(response);
+    }
+
+    function ajaxError() {
+        alert("error");
+    }
+
+	function getitem(val) {
+        if(val != '') {
+            $.ajax({
+                url: 'salesajax.php',
+                type: 'POST',
+                data: {
+                    sale_id: val
+                },
+                success: function(response) {
+                    query = response;
+                    $('select[name="item_id[]"]').html('<option value="">--Select--</option>' + response);
+                },
+                error: ajaxError
+            });
+        } else {
+            $('select[name="item_id[]"]').html('<option value="">--Select--</option>');
+            query = "";
+        }
+    }
 </script>
 <script>
 	var counter=1;
@@ -414,9 +601,10 @@
 			if(chk!="")
 			{
 				counter++;
-				var str1="<tr id='"+counter+"'><td align='left' valign='middle'><div class='form-group'><select id='"+item_id+"'class='form-control' name='item_id[]' onchange='getValues1(this.value); more();' tabindex='1'><option value=''>--Select--</option>"+query+"</select></div></td><td> <div class='form-group'><input type='text' class='form-control' name='mrp[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='qty[]' id='"+qty+"'  onkeyup=\"calc(); chk_qty(this.value,'"+qty+"');\" tabindex='1'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='disper[]' value='0' onkeyup='calc();'/></div></td><td> <div class='form-group'><select class='form-control' name='distype[]' onchange='calc();'><option>C</option><option value='P'>%</option></select></div></td><td> <div class='form-group'><input type='text' class='form-control' name='disamt[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='rate[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='taxper[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='taxamt[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='amount[]' onkeyup='calc();'/></div></td><td><a onclick='delete_row("+counter+");'><i class='fa fa-times'></i></a></td></tr>";
+				var str1="<tr id='"+counter+"'><td align='left' valign='middle'><div class='form-group'><select id='"+item_id+"'class='form-control' name='item_id[]' onchange='onItemSelect(this);' tabindex='1'><option value=''>--Select--</option>"+query+"</select></div></td><td> <div class='form-group'><input type='text' class='form-control' name='mrp[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='qty[]' id='"+qty+"'  onkeyup=\"calc(); chk_qty(this.value,'"+qty+"');\" tabindex='1'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='disper[]' value='0' onkeyup='calc();'/></div></td><td> <div class='form-group'><select class='form-control' name='distype[]' onchange='calc();'><option>C</option><option value='P'>%</option></select></div></td><td> <div class='form-group'><input type='text' class='form-control' name='disamt[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='rate[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='taxper[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='taxamt[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='amount[]' onkeyup='calc();'/></div></td><td><a onclick='delete_row("+counter+");'><i class='fa fa-times'></i></a></td></tr>";
 				
 				$("#input_fields").append(str1);
+				$("#" + item_id).focus();
 			}
   }
    function chk()
@@ -537,7 +725,7 @@
 														<th width="10%">Party Name</th>
 														<td width='35%'>
 														<div class="ui-widget form-group">
-															<select class="form-control" name="party" tabindex='1'>
+															<select class="form-control" name="party" tabindex='1' onchange="getinvoicedet(this.value);">
 																<option value="">--Select--</option>
 																<?php
 																	$f1=mysqli_query($con,"select * from ledger_accounts where status=1 and group_id in (27) order by name");
@@ -589,8 +777,35 @@
 													</tr>
 													<tr>
                                                         <th>Against Invoice No.</th>
-														<td><div class="form-group">
-															<input type="text" class="form-control" name="aginvno" value="<?php echo $p[15]; ?>"/>
+														<td><div class="form-group" id="invoice_html">
+															<?php
+															if($p[15]!='')
+															{
+															?>
+																<select name="aginvno" class="form-control" onchange="getitem(this.value);">
+																	<option value="">Select Invoice No.</option>
+																	<?php
+																	$s1=mysqli_query($con,"select * from billbook where party='$p[2]' order by invdate desc");
+																	while($pp1=mysqli_fetch_row($s1))
+																	{
+																		if($pp1[0]==$p[15])
+																			echo "<option value='" . $pp1[0] . "' selected='selected'>" . $pp1[3] . "</option>";
+																		else
+																			echo "<option value='" . $pp1[0] . "'>" . $pp1[3] . "</option>";
+																	}
+																	?>
+																</select>
+															<?php
+															}
+															else
+															{
+															?>
+																<select name="aginvno" class="form-control">
+																	<option value="">Select Invoice No.</option>
+																</select>
+															<?php
+															}
+															?>
 														</div></td>
 														<th>Sales Person</th>
 														<td> <div class="form-group">
@@ -618,6 +833,10 @@
                                                     </tr>
 													<tr>
 														<td colspan='4'>
+															<div class="form-group">
+																<label>Scan Barcode</label>
+																<input type="text" class="form-control" id="scanInput" placeholder="Scan barcode here" autocomplete="off" />
+															</div>
 															<div class="table-responsive">
 															<table class="table table-bordered table-striped table-actions" id="input_fields">
 																<thead>
@@ -646,17 +865,22 @@
 																	<tr id="<?php echo $a; ?>">
 																		<td align="left" valign="middle">
 																			<div class="form-group">
-																					<select class="form-control" name="item_id[]" id="item_id<?php echo $a; ?>" onchange='getValues1(this.value); more();' tabindex='1'>
+																					<select class="form-control" name="item_id[]" id="item_id<?php echo $a; ?>" onchange='onItemSelect(this);' tabindex='1'>
 																								<option value="">--Select--</option>
 																						<?php
-																							$f1=mysqli_query($con,"select * from variant where item_id in (select item_id from item_details where status=1) order by v_id");
+																							$f1=mysqli_query($con,"select * from variant where item_id in (select item_details.item_id from item_details where status=1) order by v_id");
 																							while($f=mysqli_fetch_row($f1))
 																							{
 																								$c=mysqli_fetch_row(mysqli_query($con,"select * from item_details where item_id='$f[1]'"));
+																								if ($c[2] == 'Fabric') {
+																									$option_text = htmlspecialchars("$c[1]-$c[5]-$f[3]");
+																								} else {
+																									$option_text = htmlspecialchars("$c[1]-$c[5]-$f[2]-$f[3]");
+																								}
 																								if($k[1]==$f[0])
-																								echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]' selected>".htmlspecialchars("$c[1]-$c[5] $f[2] $f[3]")."</option>";
+																								echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]' selected>".$option_text."</option>";
 																								else
-																								echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]'>".htmlspecialchars("$c[1]-$c[5] $f[2] $f[3]")."</option>";
+																								echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]'>".$option_text."</option>";
 																							}
 																						?>	
 																					</select>
@@ -710,7 +934,7 @@
 																	<tr id='0'>
 																		<td align="left" valign="middle">
 																			<div class="form-group">
-																				<select class="form-control" name="item_id[]" id="item_id<?php echo $qty; ?>" onchange='getValues1(this.value); more();' tabindex='1'>
+																				<select class="form-control" name="item_id[]" id="item_id<?php echo $qty; ?>" onchange='onItemSelect(this);' tabindex='1'>
 																							<option value="">--Select--</option>
 																					<?php
 																						$f1=mysqli_query($con,"select * from variant where item_id in (select item_id from item_details where status=1) and stock>0 order by v_id");										
@@ -718,7 +942,7 @@
 																						{
 																							$c=mysqli_fetch_row(mysqli_query($con,"select * from item_details where item_id='$f[1]'"));
 																							
-																							echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]'>".htmlspecialchars("$c[1]-$c[5] $f[2] $f[3]")."</option>";
+																							echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]'>".htmlspecialchars("$c[1]-$c[5] $f[2] $f[3]")."</option>";
 																						}
 																					?>	
 																				</select>
