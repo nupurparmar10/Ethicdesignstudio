@@ -373,7 +373,7 @@ function getbal(val)
                                 </div>
                                 <div class="panel-footer">
 									
-									<button class="btn btn-primary" type="submit" name="s1">Receive</button>
+									<button class="btn btn-primary" type="submit" name="s1">Pay</button>
                                     <button class="btn btn-default">Clear Form</button>                                    
                                 </div>
                             </div>

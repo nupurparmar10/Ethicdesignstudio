@@ -47,537 +47,644 @@
 $d1=mysqli_query($con,"select * from billbook where sale_id='".$_REQUEST['sale_id']."'");
 $d=mysqli_fetch_row($d1);
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title><?php echo $d[3]; ?></title>                
+<meta charset="UTF-8">
+<title><?php echo $d[3]; ?></title>
 <link rel="icon" href="logo3.png" type="image/x-icon" />
-<script type="text/javascript">
-function printinvoice()
-  {
-	window.print()
+<style>
+  @page {
+    size: A5;
+    margin: 0;
   }
-  
-</script>
-<style type="text/css" media="print">
-@page{
-	size: portrait;
-}
-@media print {
+  @media print {
+    .no-print {
+      display: none !important;
+    }
     #new {page-break-before: always;}
-}
+    .page {
+      height: 210mm !important; 
+      min-height: auto !important;
+      margin-bottom: 0 !important;
+    }
+  }
+  .print-toolbar {
+    background-color: #f1f1f1;
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 15px;
+  }
+  .print-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: #e0672c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .print-btn:hover {
+    background-color: #c85a22;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 7.2pt;
+    color: #262322;
+    line-height: 1.25;
+  }
+  .page {
+    position: relative;
+    width: 148mm;
+    min-height: 210mm;
+    padding: 5mm 7mm 5mm 7mm;
+    border: 1.4pt solid #e0672c;
+    outline: 0.5pt solid #e0672c;
+    outline-offset: -2.6mm;
+    overflow: hidden;
+    margin-bottom: 5mm;
+  }
+
+  /* watermark */
+  .watermark {
+    position: absolute;
+    top: 30mm;
+    left: 0;
+    width: 148mm;
+    height: 160mm;
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .watermark-inner {
+    /* transform: rotate(-28deg); */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.25;
+  }
+  .watermark-inner img {
+    width: 74mm;
+    margin-bottom: 3mm;
+  }
+  .watermark-inner .wm-text {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17pt;
+    font-weight: 700;
+    color: #b5581f;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .sheet { position: relative; z-index: 1; width: 100%; }
+
+  /* ---------- HEADER ---------- */
+  .top-band {
+    text-align: center;
+    font-size: 6.6pt;
+    color: #b5651d;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.6mm;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1.6pt solid #e0672c;
+    padding-bottom: 1.4mm;
+    margin-bottom: 1.6mm;
+  }
+  .brand img { height: 8mm; display: block; }
+  .invoice-tag {
+    text-align: right;
+  }
+  .invoice-tag .tax-invoice {
+    display: inline-block;
+    background: #e0672c;
+    color: #fff;
+    font-weight: 700;
+    font-size: 8.6pt;
+    letter-spacing: 1.2px;
+    padding: 1mm 3.6mm;
+    border-radius: 2px;
+    margin-bottom: 1mm;
+  }
+  .invoice-tag .meta-row {
+    font-size: 7pt;
+    color: #333;
+  }
+  .invoice-tag .meta-row b { color: #111; }
+
+  /* ---------- PARTY DETAILS ---------- */
+  .parties {
+    display: flex;
+    gap: 3mm;
+    margin-bottom: 1.6mm;
+  }
+  .party-box {
+    flex: 1;
+    border: 0.6pt solid #ddc9bd;
+    border-radius: 2px;
+    padding: 1.6mm 2.4mm;
+    background: #fdf8f5;
+  }
+  .party-box.billed {
+    background: #fbfaf7;
+    border-color: #ddd6c8;
+  }
+  .party-title {
+    font-size: 7.6pt;
+    font-weight: 700;
+    color: #e0672c;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 1mm;
+    border-bottom: 0.5pt dotted #cbb7ab;
+    padding-bottom: 0.8mm;
+  }
+  .party-box.billed .party-title { color: #6d6355; }
+  .company-name { font-weight: 700; font-size: 8pt; margin-bottom: 0.8mm; }
+  .line { margin-bottom: 0.5mm; }
+  .icon-line { display: flex; gap: 1.3mm; margin-bottom: 0.5mm; }
+  .icon-line .ic {
+    flex: 0 0 auto;
+    width: 3mm; height: 3mm;
+    border-radius: 50%;
+    background: #e0672c;
+    color: #fff;
+    font-size: 5.6pt;
+    text-align: center;
+    line-height: 3mm;
+  }
+  .party-box.billed .icon-line .ic { background: #7a715f; }
+  .icon-line .txt { flex: 1; word-break: break-word; }
+  .gstin-tag {
+    margin-top: 1.2mm;
+    display: inline-block;
+    font-weight: 700;
+    font-size: 7.2pt;
+    background: #f1e3da;
+    color: #a2481a;
+    padding: 0.6mm 1.6mm;
+    border-radius: 2px;
+  }
+  .party-box.billed .gstin-tag { background: #efece4; color: #5b5344; }
+
+  .pay-strip {
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.2pt;
+    margin-top: 1.6mm;
+    padding-top: 1.2mm;
+    border-top: 0.5pt dotted #cbb7ab;
+  }
+
+  /* ---------- ITEMS TABLE ---------- */
+  table.items {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.6mm;
+  }
+  table.items thead th {
+    background: #e0672c;
+    color: #fff;
+    font-size: 5.4pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 1.1mm 1mm;
+    border: 0.5pt solid #c85a22;
+    text-align: center;
+  }
+  table.items tbody td {
+    padding: 0.8mm 1mm;
+    border: 0.5pt solid #e6dcd3;
+    text-align: center;
+    font-size: 6.2pt;
+  }
+  table.items tbody tr:nth-child(even) { background: #fdf8f5; }
+  table.items td.desc { text-align: left; }
+  table.items td.num { text-align: right; padding-right: 2mm; }
+  table.items tbody tr.filler td { border-left: 0.5pt solid #e6dcd3; border-right: 0.5pt solid #e6dcd3; height: 8mm; }
+
+  /* ---------- TOTALS SECTION ---------- */
+  .totals-wrap {
+    display: flex;
+    gap: 3mm;
+    margin-bottom: 1.6mm;
+  }
+  .gst-table {
+    flex: 1.15;
+    border-collapse: collapse;
+  }
+  .gst-table th {
+    background: #f1e3da;
+    color: #7a3d15;
+    font-size: 6.8pt;
+    padding: 1mm;
+    border: 0.5pt solid #e6dcd3;
+  }
+  .gst-table td {
+    font-size: 7pt;
+    padding: 1mm;
+    border: 0.5pt solid #e6dcd3;
+    text-align: right;
+    padding-right: 2mm;
+  }
+  .gst-table td.pct { text-align: center; padding-right: 1mm; }
+
+  .charges-table {
+    flex: 1;
+    border-collapse: collapse;
+  }
+  .charges-table td {
+    font-size: 6.9pt;
+    padding: 0.8mm 1.6mm;
+    border: 0.5pt solid #e6dcd3;
+  }
+  .charges-table td.label { color: #555; }
+  .charges-table td.val { text-align: right; font-weight: 600; }
+  .charges-table tr.grand td {
+    background: #e0672c;
+    color: #fff;
+    font-weight: 700;
+    font-size: 7.6pt;
+    border-color: #c85a22;
+  }
+
+  .amount-words {
+    background: #fdf8f5;
+    border: 0.6pt solid #ddc9bd;
+    border-radius: 2px;
+    padding: 1.2mm 2.4mm;
+    font-size: 7pt;
+    margin-bottom: 1.6mm;
+  }
+  .amount-words b { color: #a2481a; }
+
+  /* ---------- NOTES & QR & BANK ---------- */
+  .bottom-grid {
+    display: flex;
+    gap: 3mm;
+    margin-bottom: 1.6mm;
+  }
+  .notes-col {
+    flex: 1.15;
+    font-size: 6.3pt;
+    color: #444;
+  }
+  .notes-col .h { font-weight: 700; color: #e0672c; font-size: 6.8pt; margin-bottom: 0.6mm; text-transform: uppercase; letter-spacing: 0.4px; }
+  .notes-col ol { margin: 0; padding-left: 3mm; }
+  .notes-col li { margin-bottom: 0.3mm; }
+
+  .qr-col {
+    flex: 0 0 auto;
+    text-align: center;
+    font-size: 6.2pt;
+    color: #555;
+  }
+  .qr-col img { width: 15mm; height: 15mm; display: block; margin: 0 auto 0.6mm; border: 0.5pt solid #ddc9bd; padding: 0.6mm; }
+
+  .bank-col {
+    flex: 1;
+    font-size: 6.5pt;
+    border: 0.6pt solid #ddc9bd;
+    border-radius: 2px;
+    padding: 1.2mm 2mm;
+    background: #fdf8f5;
+  }
+  .bank-col .h { font-weight: 700; color: #a2481a; font-size: 6.8pt; margin-bottom: 0.6mm; }
+  .bank-col div { margin-bottom: 0.3mm; }
+
+  /* ---------- SIGNATURE ---------- */
+  .signatures {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2.6mm;
+    padding-top: 1.2mm;
+    border-top: 0.6pt solid #e0672c;
+    font-size: 6.8pt;
+    font-weight: 600;
+  }
+  .for-company {
+    text-align: right;
+    font-size: 6.8pt;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 3mm;
+  }
+  .sig-right { text-align: right; }
+
+  .jurisdiction-footer {
+    text-align: center;
+    font-size: 6.4pt;
+    color: #999;
+    margin-top: 2mm;
+  }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+  function printinvoice() {
+    window.print();
+  }
+  function saveAsPDF() {
+    var element = document.body;
+    var toolbar = document.querySelector('.print-toolbar');
+    toolbar.style.display = 'none';
+
+    var opt = {
+      margin:       0,
+      filename:     'Invoice_<?php echo $d[3]; ?>.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a5', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(function() {
+      toolbar.style.display = 'block';
+    });
+  }
+</script>
 </head>
-<body onload="printinvoice();">
+<body>
+
+<div class="print-toolbar no-print">
+  <button class="print-btn" onclick="printinvoice()">Print Invoice</button>
+  <button class="print-btn" style="margin-left:10px; background-color: #333;" onclick="saveAsPDF()">Save as PDF</button>
+</div>
+
 <?php
 	$c1=mysqli_query($con,"select count(*) from bill_items where sale_id='$_REQUEST[sale_id]'");
 	$c=mysqli_fetch_row($c1);
-	$start=0;
-	$limit=15;
-	$count=ceil($c[0]/15);
+	$total_items = $c[0];
+	if ($total_items == 0) $total_items = 1;
+	$limit1 = 10;
+	$limit2 = 16;
+	if ($total_items <= $limit1) {
+		$count = 1;
+	} else {
+		$count = 1 + ceil(($total_items - $limit1) / $limit2);
+	}
 	$amt1=0;
 	$tot=0;
 	$dis=0;
-	$igst=0;
+	$sgst=0;
+	$cgst=0;
 	$j=1;
 	$taxableamt28=0;
 	$taxableamt18=0;
 	$taxableamt12=0;
 	$taxableamt5=0;
 	$exempted=0;
+
+	$k1=mysqli_query($con,"select name from ledger_accounts where ledger_id=$d[2]");
+	$k=mysqli_fetch_row($k1);
+	$party1=mysqli_query($con,"select * from ledger_details where ledger_id=$d[2]");	
+  if($p1=mysqli_fetch_row($party1)){}
+  else
+  {
+    for($i=0;$i<=5;$i++)
+      $p1[$i]="";
+  }
+	$emp1=mysqli_query($con,"select empname from empdet where ledger_id='$d[17]'");
+	if($emp=mysqli_fetch_row($emp1)) {} else $emp[0]="";
+
+	for($i=1;$i<=$count;$i++)
+	{
+        if ($i == 1) {
+            $limit = $limit1;
+            $start = 0;
+        } else {
+            $limit = $limit2;
+            $start = $limit1 + ($i - 2) * $limit2;
+        }
 ?>
-		<?php
-			
-			$k1=mysqli_query($con,"select name from ledger_accounts where ledger_id=$d[2]");
-			$k=mysqli_fetch_row($k1);
-			$party1=mysqli_query($con,"select * from ledger_details where ledger_id=$d[2]");	
-			if($p1=mysqli_fetch_row($party1)){}
-			else
-			{
-				for($i=0;$i<=5;$i++)
-					$p1[$i]="";
-			}
-			$emp1=mysqli_query($con,"select empname from empdet where ledger_id='$d[17]'");
-			if($emp=mysqli_fetch_row($emp1)) {} else $emp[0]="";
-		?>
-		<?php
-			for($i=1;$i<$count;$i++)
-			{
-		?>
-		<div style="font-size:14px; background: url(assets/admin.png)  no-repeat center center; padding-top:10px;">		
-		<table style="border-collapse:collapse;" align="center" width="100%">
-                <tr>
-					<td colspan='3' align='center'  style='color:#c50505d6;'>||  श्री पार्श्वनाथाय नमः  ||</td>
-				</tr>
-				<tr>
-					<td colspan='3' align='center' style='color:#c50505d6; font-size:18px; font-weight:bold;'><u>TAX INVOICE</u></td>
-				</tR>
-				<tr>
-					<td colspan='2' width='65%'><img src="img/VHS.png" width="100%" height="80"/></td>
-					<td align='right'><span style='color:#19b5d8; font-weight:bold; font-size:16px;'> Invoice No. : <?php echo $d[3]; ?></span><br>
-					<b>Date :</b> <?php if($d[1]!="0000-00-00"){
-					$date= DateTime::createFromFormat('Y-m-d', $d[1]);
-					echo $date->format('M d, Y'); } ?>
-					<br>
-					<b>Salesman:</b> <?php echo $emp[0]; ?>
-					</td>
-				</tr>
-				<tr>
-					<td colspan='3' style='border-top:2px solid #19b5d8;'></td>
-				</tr>
-				<tr>
-					<td colspan='3'>
-						<table width='100%' style='line-height:12px;' cellspacing='0'>
-                            <tr>
-								<td width='2%'></td>
-								<td valign='top' width='40%'><span style='font-weight:bold; font-size:16px; color:#19b5d8;  font-style:italic;'>ETHIC DESIGNS LLP</span></td>
-								<td width='2%'></td>
-								<td valign='top' width='30%'><span style='font-weight:bold; font-size:16px; color:#19b5d8; padding-left:15px; font-style:italic;'>Billed To:</span></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td><img src='img/home.png' width='15px' height='15px' style='color:#19b5d8;' align='top'></tD>
-								<td><b>MAIN BRANCH</b> : 2370/71, Rani No Haziro, Manek Chowk, Ahemdabad - 380001.<br><b>BRANCH(2) :</b> 100, Lavanya Society, Nr. Jivraj Mehta Hospital, vasna, Ahemdabad - 380007.</td>
-								<td></td>
-								<td><?php echo $k[0]; ?></span></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td><img src='img/phone.jpg' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td>9824077818, 9825162255, 8980060002</td>
-								<td><img src='img/home.png' width='15px' height='15px' style='color:#19b5d8;' align='middle'> </td>
-								<td><span style='word-wrap:break-word; white-space:pre-line;'><?php echo $p1[2]; ?></span><br>
-									<?php echo "$p1[4], $p1[5]"; ?>, India</td>
-								<td></td>
-							</tr>
-							<tr>
-								<td><img src='img/email.png' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td>ethicdesignstudio@gmail.com</td>
-								<td><img src='img/phone.jpg' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td><?php echo $p1[9]; ?></td>
-								<td><b>Paid By </b>: <?php if($d[7]=="3") $paidby="Cash"; else if($d[7]=="Credit") $paidby="Credit"; else $paidby='Cheque';
-									echo $paidby; ?></td>
-							</tr>
-							<tr>
-								<td><img src='img/web.png' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td>www.ethicdesignstudio.com</td>
-								<td><img src='img/person.jpg' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td><?php echo $p1[1]; ?></td>
-								<td><?php if($d[8]!="") echo "<b>Mobile No.</b> : $d[8]"; ?></td>
-							</tr>
-							<tr>
-								<td><img src='img/info.jpg' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td><b style='color:#19b5d8;'>GSTIN : 24AAJFE0234H1ZV</b></td>
-								<td><img src='img/email.png' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td><?php echo $p1[11]; ?></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td></td>
-								<td></td>
-								<td><img src='img/info.jpg' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td><b style='color:#19b5d8;'>GSTIN: <?php echo $p1[6]; ?></b></td>
-								<td></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-				<tr><td colspan='3' style='border-top:2px solid #19b5d8;'>&nbsp;</td></tR>
-				<tr>
-				<td colspan="3">
-				<table style="border-collapse:collapse; border:1px solid grey; font-size:12px;" border='1' align="center" width="100%" height="500px" cellpadding='5px'>
-                  <tr height="5px" valign='top' align='center'>
-                   <td width="6%"><b>S. No.</b></td>
-                    <td width="51%"><b>Description of Goods<br />
-                      (Code - Name - Variant)</b></td>
-					<td width="6%"><b>HSN</b></td>  
-                    <td width="6%"><b>Qty</b></td>
-					<td width="6%"><b>Unit</b></td>
-                    <td width="6%"><b>MRP</b></td> 
-					<td width="9%"><b>Disc<br>(&#x20B9;)</b></td>					
-					<td width="9%"><b>Rate<br>(&#x20B9;)</b></td>
-					<td width="9%"><b>Tax (%)</b></td>
-                    <td width="7%"><b>IGST</b></td>
-                    <td width="12%"><b>Amount<br>(&#x20B9;)</b></td>
-                  </tr>
-                   <?php
-					$pro1=mysqli_query($con,"select * from bill_items where sale_id='".$_REQUEST['sale_id']."' LIMIT $start, $limit");
-					while($pro=mysqli_fetch_row($pro1))
-					{
-						echo "<tr style='vertical-align:top;' height='5px'>";
-						echo "<td align='center'>$j</td>";
-						$v=mysqli_fetch_row(mysqli_query($con,"select * from variant where v_id='$pro[1]'"));
-						$list1=mysqli_query($con,"select * from item_details where item_id='$v[1]'");
-						$l=mysqli_fetch_row($list1);
-						echo "<td>$l[1]-$l[5] $v[2] $v[3]</td>";
-						echo "<td align='center'>$l[4]</td>";
-						echo "<td align='center'>$pro[2]</td>";
-						echo "<td align='center'>$l[6]</td>";
-						echo "<td align='center'>".$pro[6]."</td>";			
-						if($pro[7]=="P")		
-						$d1=$pro[6]*$pro[4]/100;
-						else
-						$d1=$pro[4]*$pro[2];
-						$dis+=$d1;
-						$amt=$pro[2]*$pro[3];
-						echo "<td align='center'>".$d1."</td>";
-						echo "<td align='center'>".$pro[3]."</td>";			
-						echo "<td align='center'>".$pro[5]."</td>";
-						if($pro[5]==28)
-							$taxableamt28+=$amt;
-						else if($pro[5]==18)
-							$taxableamt18+=$amt;
-						else if($pro[5]==12)
-							$taxableamt12+=$amt;
-						else if($pro[5]==5)
-							$taxableamt5+=$amt;
-						
-						$v1=$amt*$pro[5]/100;
-						$amt=$amt+$v1;
-						
-						echo "<td align='center'>".round($v1,2)."</td>";
-						
-						$igst+=$v1;
-												
-						$tot+=$amt;
-						$amt=number_format($amt,2);
-						echo "<td align='right'>$amt</td>";
-						echo "</tr>";
-						$j++;
-					}
-					$dis1=number_format($dis,2);
-					$vat1=number_format($igst,2);
-					$vattot=($igst);
-				?>
-                  <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-                    <td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-                  </tr>
-                </table></td>
-				</tr>
-				<tr><td colspan="3">&nbsp;</td></tr>
-				<tr>
-					<td style="font-size:12px;">
-						<b>Note:</b><br/>
-						1. Warranty as per company rules & conditions.<br>
-						2. Goods once sold can’t be returned or exchanged.<br>
-						3. Rate should be valid for 7 days only.<br>
-						4. Packing & Transportation charges extra.<br>
-						5. Payment Should Be 100% Advance On Order<br>
-						6. All Subject to Ahemdabad (Gujrat) Jurisdiction
-					</td>
-					<td rowspan='5' align='left'><img src='img/vhspay.jpg' width='80%' height='140px'/><br> For Payment Scan Here</td>
-					<td  style="font-size:12px; font-weight:bold; padding:5px; border:1px solid grey;">
-						Bank Details: <?php echo $bank; ?><br>
-						A/c Name : <?php echo $accname; ?><br>
-						A/c No.: <?php echo $accno; ?><br>
-						Branch: <?php echo $branch; ?><br>
-						IFSC : <?php echo $ifsc; ?>
-					</td>
-				</tr>
-				<tr><td height="8px">&nbsp;</td></tr>
-				<tr>
-					<td></td>
-					<td align="right"><strong>For ETHIC DESIGNS LLP<br /></strong></td>
-				</tr>
-				<tr><td height="20px">&nbsp;</td></tr>
-				<tr>
-					<td style='vertical-align:bottom;'><b>Customer's Signature</b></td>
-					<td  align="right"><b>Authorised Signatory</b></td>					
-				</tr>
-      </table>   	
-	  </div>
-		<div id="new">
-	  </div>	  
-	  <?php
-	  	$start=$start+$limit;
-		}
-		?>
-		<div style="font-size:14px; background: url(assets/admin.png)  no-repeat center center; padding-top:10px;">		
-		<table style="border-collapse:collapse;" align="center" width="100%">
-                <tr>
-					<td colspan='3' align='center'  style='color:#c50505d6;'>||  श्री पार्श्वनाथाय नमः  ||</td>
-				</tr>
-				<tr>
-					<td colspan='3' align='center' style='color:#c50505d6; font-size:18px; font-weight:bold;'><u>TAX INVOICE</u></td>
-				</tR>
-				<tr>
-					<td colspan='2' width='65%'><img src="img/VHS.png" width="100%" height="80"/></td>
-					<td align='right'><span style='color:#19b5d8; font-weight:bold; font-size:16px;'> Invoice No. : <?php echo $d[3]; ?></span><br>
-					<b>Date :</b> <?php if($d[1]!="0000-00-00"){
-					$date= DateTime::createFromFormat('Y-m-d', $d[1]);
-					echo $date->format('M d, Y'); } ?>
-					<br>
-					<b>Salesman:</b> <?php echo $emp[0]; ?>
-					</td>
-				</tr>
-				<tr>
-					<td colspan='3' style='border-top:2px solid #19b5d8;'></td>
-				</tr>
-				<tr>
-					<td colspan='3'>
-						<table width='100%' style='line-height:12px;' cellspacing='0'>
-                            <tr>
-								<td width='2%'></td>
-								<td valign='top' width='40%'><span style='font-weight:bold; font-size:16px; color:#19b5d8;  font-style:italic;'>ETHIC DESIGNS LLP</span></td>
-								<td width='2%'></td>
-								<td valign='top' width='30%'><span style='font-weight:bold; font-size:16px; color:#19b5d8; padding-left:15px; font-style:italic;'>Billed To:</span></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td><img src='img/home.png' width='15px' height='15px' style='color:#19b5d8;' align='top'></tD>
-								<td><b>MAIN BRANCH</b> : 2370/71, Rani No Haziro, Manek Chowk, Ahemdabad - 380001.<br><b>BRANCH(2) :</b> 100, Lavanya Society, Nr. Jivraj Mehta Hospital, vasna, Ahemdabad - 380007.</td>
-								<td></td>
-								<td><?php echo $k[0]; ?></span></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td><img src='img/phone.jpg' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td>9824077818, 9825162255, 8980060002</td>
-								<td><img src='img/home.png' width='15px' height='15px' style='color:#19b5d8;' align='middle'> </td>
-								<td><span style='word-wrap:break-word; white-space:pre-line;'><?php echo $p1[2]; ?></span></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td><img src='img/email.png' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td>ethicdesignstudio@gmail.com</td>
-								<td><img src='img/phone.jpg' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td><?php echo $p1[4]; ?></td>
-								<td><b>Paid By </b>: <?php if($d[7]=="3") $paidby="Cash"; else if($d[7]=="Credit") $paidby="Credit"; else $paidby='Cheque';
-									echo $paidby; ?></td>
-							</tr>
-							<tr>
-								<td><img src='img/web.png' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td>www.ethicdesignstudio.com</td>
-								<td><img src='img/person.jpg' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td><?php echo $p1[1]; ?></td>
-								<td><?php if($d[8]!="") echo "<b>Mobile No.</b> : $d[8]"; ?></td>
-							</tr>
-							<tr>
-								<td><img src='img/info.jpg' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td><b style='color:#19b5d8;'>GSTIN : 24AAJFE0234H1ZV</b></td>
-								<td><img src='img/email.png' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td><?php echo $p1[5]; ?></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td></td>
-								<td></td>
-								<td><img src='img/info.jpg' width='15px' height='15px' style='color:#19b5d8;' align='middle'></td>
-								<td><b style='color:#19b5d8;'>GSTIN: <?php echo $p1[4]; ?></b></td>
-								<td></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-				<tr><td colspan='3' style='border-top:2px solid #19b5d8;'>&nbsp;</td></tR>
-				<tr>
-				<td colspan="3">
-					<table style="border-collapse:collapse; border:1px solid grey; font-size:12px;" border='1' align="center" width="100%" height="500px" cellpadding='5px'>
-                  <tr height="5px" valign='top' align='center'>
-                   <td width="6%"><b>S. No.</b></td>
-                    <td width="51%"><b>Description of Goods<br />
-                      (Code - Name - Variant)</b></td>
-					<td width="6%"><b>HSN</b></td>  
-                    <td width="6%"><b>Qty</b></td>
-					<td width="6%"><b>Unit</b></td>
-                     <td width="6%"><b>MRP</b></td>  
-					  <td width="9%"><b>Disc<br>(&#x20B9;)</b></td>
-					 <td width="9%"><b>Rate<br>(&#x20B9;)</b></td>
-					<td width="9%"><b>Tax (%)</b></td>
-                    <td width="7%"><b>IGST</b></td>					
-                    <td width="12%"><b>Amount<br>(&#x20B9;)</b></td>
-                  </tr>
-                  <?php
-					$pro1=mysqli_query($con,"select * from bill_items where sale_id='".$_REQUEST['sale_id']."' LIMIT $start, $limit");
-					while($pro=mysqli_fetch_row($pro1))
-					{
-						echo "<tr style='vertical-align:top;' height='5px'>";
-						echo "<td align='center'>$j</td>";
-                        $v=mysqli_fetch_row(mysqli_query($con,"select * from variant where v_id='$pro[1]'"));
-						$list1=mysqli_query($con,"select * from item_details where item_id='$v[1]'");
-						$l=mysqli_fetch_row($list1);
-						echo "<td>$l[1]-$l[5] $v[2] $v[3]</td>";
-						echo "<td align='center'>$l[4]</td>";
-						echo "<td align='center'>$pro[2]</td>";
-						echo "<td align='center'>$l[6]</td>";
-						echo "<td align='center'>".$pro[6]."</td>";			
-						if($pro[7]=="P")		
-						$d1=$pro[6]*$pro[4]/100;
-						else
-						$d1=$pro[4]*$pro[2];
-						$dis+=$d1;
-						$amt=$pro[2]*$pro[3];
-						echo "<td align='center'>".$d1."</td>";
-						echo "<td align='center'>".$pro[3]."</td>";			
-						echo "<td align='center'>".$pro[5]."</td>";
-						if($pro[5]==28)
-							$taxableamt28+=$amt;
-						else if($pro[5]==18)
-							$taxableamt18+=$amt;
-						else if($pro[5]==12)
-							$taxableamt12+=$amt;
-						else if($pro[5]==5)
-							$taxableamt5+=$amt;
-						
-						$v1=$amt*$pro[5]/100;
-						$amt=$amt+$v1;
-						
-						echo "<td align='center'>".round($v1,2)."</td>";
-						
-						$igst+=$v1;						
-												
-						$tot+=$amt;
-						$amt=number_format($amt,2);
-						echo "<td align='right'>$amt</td>";
-						echo "</tr>";
-						$j++;
-					}
-					$dis1=$dis;
-					$vat1=number_format($igst,2);
-					$vattot=($igst);
-				?>
-                  <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-                    <td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-                  </tr>
-                  <tr height="5px">
-                    <td colspan='7' rowspan='6' valign='top'>
-						<table border='1' style='border-collapse:collapse; font-size:14px;' width='100%'>
-							<tr align='center'>
-								<td><b>GST %</b></td>
-								<td><b>Taxable Amount</b></td>
-								<td><b>IGST</b></td>
-							</tr>
-							<tr align='right'>
-								<td align='center'><b>5%</b></td>
-								<td><b><?php echo number_format($taxableamt5,2); ?></b></td>
-								<td><b><?php echo number_format(($taxableamt5*5/100),2); ?></b></td>
-							</tr>
-							<tr align='right'>
-								<td align='center'><b>12%</b></td>
-								<td><b><?php echo number_format($taxableamt12,2); ?></b></td>
-								<td><b><?php echo number_format(($taxableamt12*12/100),2); ?></b></td>
-							</tr>
-							<tr align='right'>
-								<td align='center'><b>18%</b></td>
-								<td><b><?php echo number_format($taxableamt18,2); ?></b></td>
-								<td><b><?php echo number_format(($taxableamt18*18/100),2); ?></b></td>
-							</tr>
-							<tr align='right'>
-								<td align='center'><b>28%</b></td>
-								<td><b><?php echo number_format($taxableamt28,2); ?></b></td>
-								<td><b><?php echo number_format(($taxableamt28*28/100),2); ?></b></td>
-							</tr>
-						</table>
-					</td>
-					<td colspan='3' style='line-height:10px;'><b>TOTAL :</b></td>
-					<td align='right'  style='line-height:10px;'><strong>
-                      <?php echo number_format($tot,2); ?>
-                    </strong></td>
-                  </tr>
-				  <tr height="1px"  style='line-height:10px;'>
-				 	 <td colspan='3'><b>SPL DIS :</b></td>
-					<td align='right'><strong>
-                      <?php $tot=$tot-$d[9]; echo number_format($d[9],2); ?>
-                    </strong></td>
-				  </tr>
-				  <tr height="1px"  style='line-height:10px;'>
-					<td colspan='3' ><b>FREIGHT :</b></td>
-					<td align='right'><strong>
-                      <?php $tot=$tot+$d[11]; echo number_format($d[11],2); ?>
-                    </strong></td>
-				  </tr>
-				  <tr height="1px"  style='line-height:10px;'>
-					<td colspan='3' ><b>TRANSPORT :</b></td>
-					<td align='right'><strong>
-                      <?php $tot=$tot+$d[10]; echo number_format($d[10],2); ?>
-                    </strong></td>
-				  </tr>
-				  <tr height="1px" style='line-height:10px;'>
-					<td colspan='3' style="text-transform:uppercase;"><b><?php echo $d[6]; ?> :</b></td>
-					<td align='right'><strong>
-                      <?php $tot=$tot+$d[12]; echo number_format($d[12],2); ?>
-                    </strong></td>
-				  </tr>
-				  <tr height="1px" style='line-height:10px;'>
-					<td colspan='3' ><b>ROUND OFF :</b></td>
-					<td align='right'><strong>
-                      <?php $tot=$tot+$d[13]; echo number_format($d[13],2); ?>
-                    </strong></td>
-				  </tr>
-				<?php
-					$round1=round($tot,0);
-					$r=$round1-$tot;
-					$grand=$tot+$r;
-				?>
-                  <tr height="5px">
-                    <td colspan='6' ><b>Grand Total</b></td>
-                    <td align='right'><strong><?php echo $dis1; ?></strong></td>
-					<td></td>
-					<td></td>
-                    <td align='right'><strong><?php echo number_format($vattot,2); ?></strong></td>					
-                    <td align='right'><strong>
-                      <?php $tot1=number_format($grand,2); echo $tot1; ?>
-                    </strong></td>
-                  </tr>
-                </table></td>
-				</tr>
-				
-				<tr>
-					<td colspan="3"><strong>Amount Payable (in words)- <b><?php echo "INR ".no_to_words($tot)." Only"; ?></b></strong>
-					<span style="float:right;"><strong>E. & O.E</strong></span></td>
-				</tr>
-				<tr><td colspan="3">&nbsp;</td></tr>
-				<tr>
-					<td style="font-size:12px;">
-						<b>Note:</b><br/>
-						1. Warranty as per company rules & conditions.<br>
-						2. Goods once sold can’t be returned or exchanged.<br>
-						3. Rate should be valid for 7 days only.<br>
-						4. Packing & Transportation charges extra.<br>
-						5. Payment Should Be 100% Advance On Order<br>
-						6. All Subject to Ahemdabad (Gujrat) Jurisdiction
-					</td>
-					<td rowspan='5' align='left'><img src='img/vhspay.jpg' width='80%' height='140px'/><br> For Payment Scan Here</td>
-					<td  style="font-size:12px; font-weight:bold; padding:5px; border:1px solid grey;">
-						Bank Details: <?php echo $bank; ?><br>
-						A/c Name : <?php echo $accname; ?><br>
-						A/c No.: <?php echo $accno; ?><br>
-						Branch: <?php echo $branch; ?><br>
-						IFSC : <?php echo $ifsc; ?>
-					</td>
-				</tr>
-				<tr><td height="8px">&nbsp;</td></tr>
-				<tr>
-					<td></td>
-					<td align="right"><strong>For ETHIC DESIGNS LLP<br /></strong></td>
-				</tr>
-				<tr><td height="20px">&nbsp;</td></tr>
-				<tr>
-					<td style='vertical-align:bottom;'><b>Customer's Signature</b></td>
-					<td  align="right"><b>Authorised Signatory</b></td>					
-				</tr>
-      </table>   	
-	  </div>
+<div class="page">
+  <div class="watermark">
+    <div class="watermark-inner">
+      <img src="assets/admin.png" alt="">
+    </div>
+  </div>
+
+<div class="sheet">
+
+  <?php if ($i == 1) { ?>
+  <div class="top-band">|| श्री पार्श्वनाथाय नमः ||</div>
+
+  <div class="header">
+    <div class="brand">
+      <img src="img/VHS.png" alt="Ethic Design Studio">
+    </div>
+    <div class="invoice-tag">
+      <div class="tax-invoice">TAX INVOICE</div>
+      <div class="meta-row"><b>Invoice No.:</b> <?php echo $d[3]; ?></div>
+      <div class="meta-row"><b>Date:</b> <?php if($d[1]!="0000-00-00"){ $date= DateTime::createFromFormat('Y-m-d', $d[1]); echo $date->format('M d, Y'); } ?></div>
+      <div class="meta-row"><b>Salesman:</b> <?php echo ($emp[0] != "") ? $emp[0] : "&mdash;"; ?></div>
+    </div>
+  </div>
+
+  <div class="parties">
+    <div class="party-box">
+      <div class="party-title">Ethic Designs LLP</div>
+      <div class="line"><b>Main Branch:</b> 2370/71, Rani No Haziro, Manek Chowk, Ahmedabad &ndash; 380001.</div>
+      <div class="line"><b>Branch(2):</b> 100, Lavanya Society, Nr. Jivraj Mehta Hospital, Vasna, Ahmedabad &ndash; 380007.</div>
+      <div class="icon-line"><span class="ic">&#9742;</span><span class="txt">9824077818, 9825162255, 8980060002</span></div>
+      <div class="icon-line"><span class="ic">@</span><span class="txt">ethicdesignstudio@gmail.com</span></div>
+      <div class="icon-line"><span class="ic">&#127760;</span><span class="txt">www.ethicdesignstudio.com</span></div>
+      <div class="icon-line">
+        <span class="ic">&#128247;</span>
+        <span class="txt">
+          <a href="https://www.instagram.com/ethicdesignstudio" target="_blank" style="text-decoration: none; color: inherit;">
+            instagram.com/ethicdesignstudio
+          </a>
+        </span>
+      </div>
+
+      <span class="gstin-tag">GSTIN: 24AAJFE0234H1ZV</span>
+    </div>
+
+    <div class="party-box billed">
+      <div class="party-title">Billed To</div>
+      <div class="company-name">M/s <?php echo (!empty($k[0])) ? $k[0] : ''; ?></div>
+      <div class="icon-line"><span class="ic">&#9742;</span><span class="txt"><?php echo (!empty($p1[4])) ? $p1[4] : ((!empty($d[8])) ? $d[8] : '-'); ?></span></div>
+      <div class="icon-line"><span class="ic">@</span><span class="txt"><?php echo (!empty($p1[5])) ? $p1[5] : '-'; ?></span></div>
+      <div class="icon-line"><span class="ic">&#128100;</span><span class="txt"><?php echo (!empty($p1[1])) ? $p1[1] : '-'; ?></span></div>
+      <span class="gstin-tag">GSTIN: <?php echo (!empty($p1[4])) ? $p1[4] : '-'; ?></span>
+      <div class="pay-strip">
+        <span><b>Paid By:</b> <?php if($d[7]=="3") echo "Cash"; else if($d[7]=="Credit") echo "Credit"; else echo "Cheque"; ?></span>
+      </div>
+    </div>
+  </div>
+  <?php } else { ?>
+  <div style="height: 10mm;"></div>
+  <?php } ?>
+
+  <table class="items">
+    <thead>
+      <tr>
+        <th style="width:5%;">S.No.</th>
+        <th style="width:23%;">Description of Goods<br><span style="font-weight:400;font-size:6.2pt;text-transform:none;">(Code - Name - Variant)</span></th>
+        <th style="width:7%;">HSN</th>
+        <th style="width:5%;">Qty</th>
+        <th style="width:6%;">Unit</th>
+        <th style="width:8%;">MRP</th>
+        <th style="width:8%;">Disc (₹)</th>
+        <th style="width:8%;">Rate (₹)</th>
+        <th style="width:6%;">Tax (%)</th>
+        <th style="width:7%;">CGST</th>
+        <th style="width:7%;">SGST</th>
+        <th style="width:10%;">Amount (₹)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php
+		$pro1=mysqli_query($con,"select * from bill_items where sale_id='".$_REQUEST['sale_id']."' LIMIT $start, $limit");
+		while($pro=mysqli_fetch_row($pro1))
+		{
+            $v=mysqli_fetch_row(mysqli_query($con,"select * from variant where v_id='$pro[1]'"));
+            if(!$v) $v = array_fill(0, 10, "");
+            $list1=mysqli_query($con,"select * from item_details where item_id='$v[1]'");
+            $l=mysqli_fetch_row($list1);
+            if(!$l) $l = array_fill(0, 10, "");
+            
+            if($pro[7]=="P")		
+                $d1_discount=$pro[6]*$pro[4]/100;
+            else
+                $d1_discount=$pro[4]*$pro[2];
+            
+            $dis+=$d1_discount;
+            $amt=$pro[2]*$pro[3];
+            
+            if($pro[5]==28)
+                $taxableamt28+=$amt;
+            else if($pro[5]==18)
+                $taxableamt18+=$amt;
+            else if($pro[5]==12)
+                $taxableamt12+=$amt;
+            else if($pro[5]==5)
+                $taxableamt5+=$amt;
+            
+            $v1=$amt*$pro[5]/100;
+            $amt=$amt+$v1;
+            
+            $sgst+=$v1/2;
+            $cgst+=$v1/2;						
+                                    
+            $tot+=$amt;
+      ?>
+      <tr>
+        <td><?php echo $j; ?></td>
+        <td class="desc"><?php echo "$l[1]-$l[5] $v[2] $v[3]"; ?></td>
+        <td><?php echo $l[4]; ?></td>
+        <td><?php echo $pro[2]; ?></td>
+        <td><?php echo $l[6]; ?></td>
+        <td class="num"><?php echo $pro[6]; ?></td>
+        <td class="num"><?php echo number_format($d1_discount,2); ?></td>
+        <td class="num"><?php echo number_format($pro[3],2); ?></td>
+        <td><?php echo $pro[5]; ?></td>
+        <td class="num"><?php echo number_format($v1/2,2); ?></td>
+        <td class="num"><?php echo number_format($v1/2,2); ?></td>
+        <td class="num"><?php echo number_format($amt,2); ?></td>
+      </tr>
+      <?php
+            $j++;
+        }
+      ?>
+      <tr class="filler"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  <?php if($i == $count) { 
+        $dis1=$dis;
+        $vat1=number_format($sgst,2);
+        $vat2=number_format($cgst,2);
+        $vattot=($sgst+$cgst);
+  ?>
+  <div class="totals-wrap">
+    <table class="gst-table">
+      <thead>
+        <tr><th style="width:18%;">GST %</th><th>Taxable Amount</th><th>CGST</th><th>SGST</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="pct">5%</td><td><?php echo number_format($taxableamt5,2); ?></td><td><?php echo number_format(($taxableamt5*5/100)/2,2); ?></td><td><?php echo number_format(($taxableamt5*5/100)/2,2); ?></td></tr>
+        <tr><td class="pct">12%</td><td><?php echo number_format($taxableamt12,2); ?></td><td><?php echo number_format(($taxableamt12*12/100)/2,2); ?></td><td><?php echo number_format(($taxableamt12*12/100)/2,2); ?></td></tr>
+        <tr><td class="pct">18%</td><td><?php echo number_format($taxableamt18,2); ?></td><td><?php echo number_format(($taxableamt18*18/100)/2,2); ?></td><td><?php echo number_format(($taxableamt18*18/100)/2,2); ?></td></tr>
+        <tr><td class="pct">28%</td><td><?php echo number_format($taxableamt28,2); ?></td><td><?php echo number_format(($taxableamt28*28/100)/2,2); ?></td><td><?php echo number_format(($taxableamt28*28/100)/2,2); ?></td></tr>
+      </tbody>
+    </table>
+
+    <table class="charges-table">
+      <tr><td class="label">Total</td><td class="val"><?php echo number_format($tot,2); ?></td></tr>
+      <tr><td class="label">Spl. Discount</td><td class="val"><?php $tot=$tot-$d[9]; echo number_format($d[9],2); ?></td></tr>
+      <tr><td class="label">Freight</td><td class="val"><?php $tot=$tot+$d[11]; echo number_format($d[11],2); ?></td></tr>
+      <tr><td class="label">Transport</td><td class="val"><?php $tot=$tot+$d[10]; echo number_format($d[10],2); ?></td></tr>
+      <tr><td class="label" style="text-transform:uppercase;"><?php echo ($d[6] != '') ? $d[6] : 'Convenience Charges'; ?></td><td class="val"><?php $tot=$tot+$d[12]; echo number_format($d[12],2); ?></td></tr>
+      <tr><td class="label">Round Off</td><td class="val"><?php $tot=$tot+$d[13]; echo number_format($d[13],2); ?></td></tr>
+      <?php
+		$round1=round($tot,0);
+		$r=$round1-$tot;
+		$grand=$tot+$r;
+      ?>
+      <tr class="grand"><td class="label" style="color:#fff;">Grand Total</td><td class="val"><?php echo number_format($grand,2); ?></td></tr>
+    </table>
+  </div>
+
+  <div class="amount-words">
+    <b>Amount Payable (in words):</b> INR <?php echo no_to_words($grand); ?> Only &nbsp;&nbsp;<span style="float:right;color:#888;">E. &amp; O.E</span>
+  </div>
+  <?php } ?>
+
+  <div class="bottom-grid">
+    <div class="notes-col">
+      <div class="h">Notes</div>
+      <ol>
+        <li>Warranty as per company rules &amp; conditions.</li>
+        <li>Goods once sold can&rsquo;t be returned or exchanged.</li>
+        <li>Rate should be valid for 7 days only.</li>
+        <li>Packing &amp; Transportation charges extra.</li>
+        <li>Payment should be 100% advance on order.</li>
+        <li>All subject to Ahmedabad (Gujarat) jurisdiction.</li>
+      </ol>
+    </div>
+
+    <div class="qr-col">
+      <img src="img/vhspay.jpg" alt="QR Code">
+      For Payment Scan Here
+    </div>
+
+    <div class="bank-col">
+      <div class="h">Bank Details</div>
+      <div><b>Bank Name:</b> <?php echo $bank; ?></div>
+      <div><b>A/c Name:</b> <?php echo $accname; ?></div>
+      <div><b>A/c No.:</b> <?php echo $accno; ?></div>
+      <div><b>Branch:</b> <?php echo $branch; ?></div>
+      <div><b>IFSC:</b> <?php echo $ifsc; ?></div>
+    </div>
+  </div>
+
+  <div class="for-company">For ETHIC DESIGNS LLP</div>
+
+  <div class="signatures">
+    <span>Customer&rsquo;s Signature</span>
+    <span class="sig-right">Authorised Signatory</span>
+  </div>
+
+</div>
+</div>
+<?php
+    if($i < $count) {
+        echo '<div id="new"></div>';
+    }
+}
+?>
+
 </body>
 </html>

@@ -29,7 +29,7 @@
             if($f = mysqli_fetch_row($f1))
             {
                 $c = mysqli_fetch_row(mysqli_query($con,"select * from item_details where item_id='$f[1]'"));
-                $options .= "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]'>".htmlspecialchars("$c[1]-$c[5] $f[2] $f[3]")."</option>";
+                $options .= "<option value='$f[0]-$f[5]-$c[7]-$b[2]' data-vid='$f[10]'>".htmlspecialchars("$c[1]-$c[5] $f[2] $f[3]")."</option>";
             }
         }
         if($options == "")

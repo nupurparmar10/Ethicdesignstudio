@@ -128,7 +128,7 @@ $msg="";
                         <!-- - + -->
                         <div class="input-step border border-dark rounded-pill">
                             <button type="button" class="minus material-shadow text-dark fw-bold">–</button>
-                            <input type="number" class="product-quantity fw-bold fs-6" value="1" min="0" max="100">
+                            <input type="number" class="product-quantity fw-bold fs-6" value="1" min="0" max="100" step="any">
                             <button type="button" class="plus material-shadow text-dark fw-bold">+</button>
                         </div>
                         <div class="my-3">

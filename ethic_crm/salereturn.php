@@ -42,7 +42,7 @@
 		$cmp=mysqli_fetch_row($cmp1);
 		$tid=$cmp[0]+1;
 		
-        mysqli_query($con,"insert into transaction set trans_id='".$tid."', tdate='".$invdate."', ledger_id='".$party."', amount='".$amt."', particulars='Sale Return. Inv. No. :$_REQUEST[invno]', type='Dr.', relatedto='$rid'");
+        mysqli_query($con,"insert into transaction set trans_id='".$tid."', tdate='".$invdate."', ledger_id='".$party."', amount='".$amt."', particulars='Sale Return. Inv. No. :$_REQUEST[invno]', type='Cr.', relatedto='$rid'");
 		
 		if($paidby!="Credit")
 		{            
@@ -868,19 +868,38 @@
 																					<select class="form-control" name="item_id[]" id="item_id<?php echo $a; ?>" onchange='onItemSelect(this);' tabindex='1'>
 																								<option value="">--Select--</option>
 																						<?php
-																							$f1=mysqli_query($con,"select * from variant where item_id in (select item_details.item_id from item_details where status=1) order by v_id");
-																							while($f=mysqli_fetch_row($f1))
-																							{
-																								$c=mysqli_fetch_row(mysqli_query($con,"select * from item_details where item_id='$f[1]'"));
-																								if ($c[2] == 'Fabric') {
-																									$option_text = htmlspecialchars("$c[1]-$c[5]-$f[3]");
-																								} else {
-																									$option_text = htmlspecialchars("$c[1]-$c[5]-$f[2]-$f[3]");
+																							if (isset($p[15]) && $p[15] != '') {
+																								$bill_items = mysqli_query($con, "select * from bill_items where sale_id='$p[15]'");
+																								while ($b = mysqli_fetch_row($bill_items)) {
+																									$f1 = mysqli_query($con, "select * from variant where v_id='$b[1]'");
+																									if ($f = mysqli_fetch_row($f1)) {
+																										$c = mysqli_fetch_row(mysqli_query($con, "select * from item_details where item_id='$f[1]'"));
+																										if ($c[2] == 'Fabric') {
+																											$option_text = htmlspecialchars("$c[1]-$c[5]-$f[3]");
+																										} else {
+																											$option_text = htmlspecialchars("$c[1]-$c[5]-$f[2]-$f[3]");
+																										}
+																										if ($k[1] == $f[0])
+																											echo "<option value='$f[0]-$f[5]-$c[7]-$b[2]' data-vid='$f[10]' selected>" . $option_text . "</option>";
+																										else
+																											echo "<option value='$f[0]-$f[5]-$c[7]-$b[2]' data-vid='$f[10]'>" . $option_text . "</option>";
+																									}
 																								}
-																								if($k[1]==$f[0])
-																								echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]' selected>".$option_text."</option>";
-																								else
-																								echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]'>".$option_text."</option>";
+																							} else {
+																								$f1=mysqli_query($con,"select * from variant where item_id in (select item_details.item_id from item_details where status=1) order by v_id");
+																								while($f=mysqli_fetch_row($f1))
+																								{
+																									$c=mysqli_fetch_row(mysqli_query($con,"select * from item_details where item_id='$f[1]'"));
+																									if ($c[2] == 'Fabric') {
+																										$option_text = htmlspecialchars("$c[1]-$c[5]-$f[3]");
+																									} else {
+																										$option_text = htmlspecialchars("$c[1]-$c[5]-$f[2]-$f[3]");
+																									}
+																									if($k[1]==$f[0])
+																									echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]' selected>".$option_text."</option>";
+																									else
+																									echo "<option value='$f[0]-$f[5]-$c[7]-$f[6]' data-vid='$f[10]'>".$option_text."</option>";
+																								}
 																							}
 																						?>	
 																					</select>
