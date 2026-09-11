@@ -235,6 +235,9 @@ if (isset($_REQUEST['msg1'])) {
 										</div>
 										<div class="row">
 											<div class="col-md-3 col-xs-2" style="margin-top: 20px;">
+												<input type="text" name="scanbarcode" id="scanbarcode" placeholder="Scan Barcode" class="form-control" style="color: black;">
+											</div>
+											<div class="col-md-3 col-xs-2" style="margin-top: 20px;">
 												<button class="btn btn-primary" type="submit" name="open">Open</button>
 											</div>
 										</div>
@@ -243,7 +246,7 @@ if (isset($_REQUEST['msg1'])) {
 								<br>
 								<div class="table-responsive" id="display">
 									<?php
-									if (isset($_REQUEST['open'])) {
+									if (isset($_REQUEST['open']) || !empty($_REQUEST['scanbarcode'])) {
 										if ($_REQUEST['ptype'] != "")
 											$ptype = " and ptype='$_REQUEST[ptype]'";
 										else
@@ -265,6 +268,13 @@ if (isset($_REQUEST['msg1'])) {
 										$collection = isset($_REQUEST['collection']) ? $_REQUEST['collection'] : '';
 										$pcode = isset($_REQUEST['pcode']) ? $_REQUEST['pcode'] : '';
 										$desp = isset($_REQUEST['desp']) ? $_REQUEST['desp'] : '';
+										$scanbarcode = isset($_REQUEST['scanbarcode']) ? $_REQUEST['scanbarcode'] : '';
+
+										$barcode_filter = "";
+										if ($scanbarcode != "") {
+											$scanbarcode_esc = mysqli_real_escape_string($con, $scanbarcode);
+											$barcode_filter = " AND (v.barcode = '$scanbarcode_esc' OR v.v_id = '$scanbarcode_esc')";
+										}
 
 										$sql = "SELECT v.*
                                             FROM variant v
@@ -276,6 +286,7 @@ if (isset($_REQUEST['msg1'])) {
                                             AND i.material_type LIKE '%$material_type%'
                                             AND i.collection LIKE '%$collection%'
                                             AND (i.purdesp LIKE '%$desp%' OR i.saledesp LIKE '%$desp%')
+                                            $barcode_filter
                                             AND i.status = 1
                                             $ptype
                                             $s_id
@@ -914,6 +925,47 @@ if (isset($_REQUEST['msg1'])) {
 			document.body.removeChild(form);
 			console.log(selectedVIds);
 		}
+
+		$(document).ready(function() {
+			var $scanInput = $('#scanbarcode');
+			// 1. Set default focus
+			$scanInput.focus();
+
+			// 2. Automatically submit form on scan
+			// Many barcode scanners act as a keyboard and end with an 'Enter' keypress.
+			$scanInput.on('keypress', function(e) {
+				if (e.which == 13) {
+					e.preventDefault();
+					var val = $.trim($(this).val());
+					if (val.length > 0) {
+						// Append a hidden input so PHP knows 'open' was triggered
+						$('<input>').attr({
+							type: 'hidden',
+							name: 'open',
+							value: '1'
+						}).appendTo('form[name="frm2"]');
+						$('form[name="frm2"]').submit();
+					}
+				}
+			});
+
+			// Fallback for scanners that do not send Enter but type fast
+			var scanTimer;
+			$scanInput.on('input', function() {
+				clearTimeout(scanTimer);
+				var val = $.trim($(this).val());
+				if (val.length > 0) {
+					scanTimer = setTimeout(function() {
+						$('<input>').attr({
+							type: 'hidden',
+							name: 'open',
+							value: '1'
+						}).appendTo('form[name="frm2"]');
+						$('form[name="frm2"]').submit();
+					}, 1000); // Wait 1000ms after last input
+				}
+			});
+		});
 	</script>
 
 </body>
