@@ -220,6 +220,15 @@ foreach($v_ids as $index => $v_id)
 
 	$name  = "i".$i;
 	$name1 = "barcode".$i;
+	if($v[3]!='')
+	{
+		$v[3] = $v[3].' '.$v[9];
+	}
+	else
+	{
+		$v[3] = $v[9];
+	}
+
 
 	if($s[2]=='Fabric')
 	{

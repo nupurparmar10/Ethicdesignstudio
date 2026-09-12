@@ -36,12 +36,15 @@
                 {
                     $size = $_REQUEST['size'.$new][$i];
                     $color = $_REQUEST['color'.$new][$i];
+                    if (strpos($color, ' ') !== false) {
+                        echo "<script>alert('Spaces are not allowed in Color.'); history.back();</script>";
+                        die;
+                    }
                     $standard_color = $_REQUEST['standard_color'.$new][$i];
-                    $concatenated_color = $color . " " . $standard_color;
                     $edsellrate= $_REQUEST['edsellrate'.$new][$i];
-                    mysqli_query($con,"insert into variant set item_id =$itemid, size='$size', color='$concatenated_color',stock='$qty',webstock='0',purrate='0',edsellrate='$edsellrate',standard_color='$standard_color'");
+                    mysqli_query($con,"insert into variant set item_id =$itemid, size='$size', color='$color',stock='$qty',webstock='0',purrate='0',edsellrate='$edsellrate',standard_color='$standard_color'");
 
-                    $v=mysqli_fetch_row(mysqli_query($con,"select v_id from variant where item_id =$itemid and size='$size' and color='$concatenated_color'"));
+                    $v=mysqli_fetch_row(mysqli_query($con,"select v_id from variant where item_id =$itemid and size='$size' and color='$color'"));
                     $barcode = encryptId($v[0]);
                     mysqli_query($con, "UPDATE variant SET barcode='$barcode' WHERE v_id='$v[0]'");
                     $fabric_cost=$_REQUEST['fabric_cost'.$new][$i];
@@ -444,12 +447,12 @@
                                                                                     </td>
                                                                                     <td> 
                                                                                         <div class="form-group">
-                                                                                        <input type="text" class="form-control" name="color<?php echo $i; ?>[]"/>
+                                                                                        <input type="text" class="form-control" name="color<?php echo $i; ?>[]" pattern="[^\s]+" oninput="this.value = this.value.replace(/\s/g, '')" />
                                                                                         </div>
                                                                                     </td>
                                                                                     <td> 
                                                                                         <div class="form-group">
-                                                                                            <select class="form-control" name="standard_color<?php echo $i; ?>[]">
+                                                                                            <select class="form-control" name="standard_color<?php echo $i; ?>[]" required>
                                                                                                 <option value="">--Select--</option>
                                                                                                 <?php
                                                                                                 $c1 = mysqli_query($con, "Select * from color_code order by color_name");

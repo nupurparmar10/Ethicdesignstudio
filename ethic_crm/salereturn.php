@@ -248,6 +248,14 @@
 	$query="";																		
 	while($f=mysqli_fetch_row($f1))
 	{
+		if($f[3]!='')
+		{
+			$f[3] = $f[3].' '.$f[9];
+		}
+		else
+		{
+			$f[3] = $f[9];
+		}
 		$c=mysqli_fetch_row(mysqli_query($con,"select * from item_details where item_id='$f[1]'"));
 		if ($c[2] == 'Fabric') {
 			$option_text = htmlspecialchars("$c[1]-$c[5]-$f[3]");
@@ -874,6 +882,14 @@
 																									$f1 = mysqli_query($con, "select * from variant where v_id='$b[1]'");
 																									if ($f = mysqli_fetch_row($f1)) {
 																										$c = mysqli_fetch_row(mysqli_query($con, "select * from item_details where item_id='$f[1]'"));
+																										if($f[3]!='')
+																										{
+																											$f[3] = $f[3].' '.$f[9];
+																										}
+																										else
+																										{
+																											$f[3] = $f[9];
+																										}
 																										if ($c[2] == 'Fabric') {
 																											$option_text = htmlspecialchars("$c[1]-$c[5]-$f[3]");
 																										} else {
@@ -890,6 +906,14 @@
 																								while($f=mysqli_fetch_row($f1))
 																								{
 																									$c=mysqli_fetch_row(mysqli_query($con,"select * from item_details where item_id='$f[1]'"));
+																									if($f[3]!='')
+																									{
+																										$f[3] = $f[3].' '.$f[9];
+																									}
+																									else
+																									{
+																										$f[3] = $f[9];
+																									}
 																									if ($c[2] == 'Fabric') {
 																										$option_text = htmlspecialchars("$c[1]-$c[5]-$f[3]");
 																									} else {

@@ -2,7 +2,6 @@
 	ob_start();
 	session_start();
 	include_once("connect.php");
-	
 	session_unset();
 	$msg="";
 	if(isset($_REQUEST['msg']))

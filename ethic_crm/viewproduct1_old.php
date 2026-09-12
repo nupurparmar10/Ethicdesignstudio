@@ -44,97 +44,6 @@ if (isset($_REQUEST['msg'])) {
 if (isset($_REQUEST['msg1'])) {
 	$msg = "Product Details Added Successfully!!!";
 }
-
-if (isset($_GET['variant_info_item_id'])) {
-	$item_id = (int)$_GET['variant_info_item_id'];
-	$item_q = mysqli_query($con, "SELECT * FROM item_details WHERE item_id='$item_id' LIMIT 1");
-	$item = $item_q ? mysqli_fetch_row($item_q) : null;
-
-	if (!$item) {
-		echo "<div class='alert alert-warning'>Product details not found.</div>";
-		exit;
-	}
-
-	$sub_cat = mysqli_fetch_row(mysqli_query($con, "SELECT * FROM pro_subcategory WHERE s_id='$item[10]' LIMIT 1"));
-	$mat_type = "";
-	$col_name = "";
-
-	$mat_q = $con->query("SELECT type FROM material_type WHERE m_id = '$item[11]' LIMIT 1");
-	if ($mat_q && $mat_q->num_rows > 0) {
-		$mat_type = $mat_q->fetch_assoc()['type'];
-	}
-
-	$col_q = $con->query("SELECT name FROM collection WHERE c_id = '$item[12]' LIMIT 1");
-	if ($col_q && $col_q->num_rows > 0) {
-		$col_name = $col_q->fetch_assoc()['name'];
-	}
-
-	$variants = mysqli_query($con, "SELECT * FROM variant WHERE item_id='$item_id' ORDER BY v_id");
-	?>
-	<div class="table-responsive">
-		<table class="table table-bordered table-striped table-actions" style="font-size:12px;">
-			<thead>
-				<tr>
-					<th>S.No.</th>
-					<th>Pic</th>
-					<th>Size</th>
-					<th>Color</th>
-					<th>Stock</th>
-					<th>Stock on Website</th>
-					<th>Ethic Price</th>
-					<th>Status</th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php
-				if ($variants && mysqli_num_rows($variants) > 0) {
-					$j = 1;
-					while ($v = mysqli_fetch_row($variants)) {
-						$pic = "";
-						$pic_q = mysqli_query($con, "SELECT pic FROM variant_pic WHERE v_id='$v[0]' ORDER BY rand() LIMIT 1");
-						if ($pic_q && mysqli_num_rows($pic_q) > 0) {
-							$pic_row = mysqli_fetch_assoc($pic_q);
-							$pic = $pic_row['pic'] ?? "";
-						}
-						if($v[3]!='')
-						{
-							$v[3] = $v[3].' '.$v[9];
-						}
-						else
-						{
-							$v[3] = $v[9];
-						}
-						$purchase_value = $v[6] * $v[4];
-						$tax_value = round($purchase_value * $item[7] / 100, 2);
-						$total_purchase_value = $purchase_value + $tax_value;
-						$total_purchase_rate = ($v[6] != 0) ? round($total_purchase_value / $v[6], 2) : 0;
-						$selling_price = round($total_purchase_rate + ($total_purchase_rate * 60 / 100), 2);
-						$status = ($item[8] == 1) ? "<span class='badge badge-success'>Active</span>" : "<span class='badge badge-danger'>Deactive</span>";
-						?>
-						<tr>
-							<td align="center"><?php echo $j; ?></td>
-							<td><?php if (!empty($pic)) { ?><img src="<?php echo htmlspecialchars($pic); ?>" height="60px" width="60px" /><?php } ?></td>
-							
-							<td align="right"><?php echo htmlspecialchars($v[2]); ?></td>
-							<td align="right"><?php echo htmlspecialchars($v[3]); ?></td>
-							<td align="right"><?php echo htmlspecialchars($v[6]); ?></td>
-							<td align="right"><?php echo htmlspecialchars($v[7]); ?></td>
-							<td align="right"><?php echo htmlspecialchars($v[5]); ?></td>
-							<td><?php echo $status; ?></td>
-						</tr>
-						<?php
-						$j++;
-					}
-				} else {
-					echo "<tr><td colspan='23' align='center'>No variants found.</td></tr>";
-				}
-				?>
-			</tbody>
-		</table>
-	</div>
-	<?php
-	exit;
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -157,18 +66,19 @@ if (isset($_GET['variant_info_item_id'])) {
 	<script>
 		function selectall() {
 			var sall = document.getElementById("all");
-			if (sall.checked == 1) {
-				var scholar = document.getElementsByName("v_id[]");
-				for (i = 0; i < scholar.length; i++) {
-					scholar[i].checked = 1;
-				}
-			} else {
-				var scholar = document.getElementsByName("v_id[]");
-				for (i = 0; i < scholar.length; i++) {
-					scholar[i].checked = 0;
-				}
+			
+			// Optional: If unchecking the header box, clear memory of all previous page selections too
+			if (!sall.checked) {
+				selectedVIds = []; 
+			}
+
+			var scholar = document.getElementsByName("v_id[]");
+			for (i = 0; i < scholar.length; i++) {
+				scholar[i].checked = sall.checked;
+				$(scholar[i]).trigger('change'); // This ensures the selectedVIds array stays in sync
 			}
 		}
+
 	</script>
 	<script src="js\jquery.min.js"></script>
 	<script src="js/jquery-1.11.0.min.js"></script>
@@ -182,7 +92,7 @@ if (isset($_GET['variant_info_item_id'])) {
 		<!-- START PAGE SIDEBAR -->
 		<?php $menu2 = true;
 		$smenu2 = "2";
-		$ssmenu2 = "24";
+		$ssmenu2 = "23";
 		include_once("sidebar.php"); ?>
 		<!-- END PAGE SIDEBAR -->
 
@@ -199,13 +109,13 @@ if (isset($_GET['variant_info_item_id'])) {
 				<li><a href="dashboard.php">Dashboard</a></li>
 				<li><a href="#">Masters</a></li>
 				<li><a href="#">Product Master</a></li>
-				<li class="active">Product List </li>
+				<li class="active">Inventory </li>
 			</ul>
 			<!-- END BREADCRUMB -->
 
 			<!-- PAGE TITLE -->
 			<div class="page-title">
-				<h2> Product List </h2>
+				<h2> Inventory </h2>
 			</div>
 			<!-- END PAGE TITLE -->
 
@@ -252,7 +162,7 @@ if (isset($_GET['variant_info_item_id'])) {
 						<div class="panel panel-default">
 
 							<div class="panel-body">
-								<form class="form-horizontal" method="post" action="viewproduct2.php" name='frm2'
+								<form class="form-horizontal" method="post" action="viewproduct1.php" name='frm2'
 									enctype="multipart/form-data">
 									<div class="form-group">
 										<div class="row">
@@ -325,6 +235,9 @@ if (isset($_GET['variant_info_item_id'])) {
 										</div>
 										<div class="row">
 											<div class="col-md-3 col-xs-2" style="margin-top: 20px;">
+												<input type="text" name="scanbarcode" id="scanbarcode" placeholder="Scan Barcode" class="form-control" style="color: black;">
+											</div>
+											<div class="col-md-3 col-xs-2" style="margin-top: 20px;">
 												<button class="btn btn-primary" type="submit" name="open">Open</button>
 											</div>
 										</div>
@@ -333,7 +246,7 @@ if (isset($_GET['variant_info_item_id'])) {
 								<br>
 								<div class="table-responsive" id="display">
 									<?php
-									if (isset($_REQUEST['open'])) {
+									if (isset($_REQUEST['open']) || !empty($_REQUEST['scanbarcode'])) {
 										if ($_REQUEST['ptype'] != "")
 											$ptype = " and ptype='$_REQUEST[ptype]'";
 										else
@@ -355,24 +268,29 @@ if (isset($_GET['variant_info_item_id'])) {
 										$collection = isset($_REQUEST['collection']) ? $_REQUEST['collection'] : '';
 										$pcode = isset($_REQUEST['pcode']) ? $_REQUEST['pcode'] : '';
 										$desp = isset($_REQUEST['desp']) ? $_REQUEST['desp'] : '';
+										$scanbarcode = isset($_REQUEST['scanbarcode']) ? $_REQUEST['scanbarcode'] : '';
+
+										$barcode_filter = "";
+										if ($scanbarcode != "") {
+											$scanbarcode_esc = mysqli_real_escape_string($con, $scanbarcode);
+											$barcode_filter = " AND (v.barcode = '$scanbarcode_esc' OR v.v_id = '$scanbarcode_esc')";
+										}
 
 										$sql = "SELECT v.*
-                                        FROM variant v
-                                        INNER JOIN item_details i ON v.item_id = i.item_id
-                                        WHERE v.v_id IN (
-                                            SELECT MIN(v_id)
-                                            FROM variant
-                                            WHERE 1 $size $color
-                                            GROUP BY item_id
-                                        )
-                                        AND i.pcode LIKE '%$pcode%'
-                                        AND i.material_type LIKE '%$material_type%'
-                                        AND i.collection LIKE '%$collection%'
-                                        AND (i.purdesp LIKE '%$desp%' OR i.saledesp LIKE '%$desp%')
-                                        AND i.status = 1
-                                        $ptype
-                                        $s_id
-                                        ORDER BY CAST(SUBSTRING(i.pcode, 3) AS UNSIGNED) ASC, v.v_id ASC";
+                                            FROM variant v
+                                            INNER JOIN item_details i ON v.item_id = i.item_id
+                                            WHERE 1
+                                            $size
+                                            $color
+                                            AND i.pcode LIKE '%$pcode%'
+                                            AND i.material_type LIKE '%$material_type%'
+                                            AND i.collection LIKE '%$collection%'
+                                            AND (i.purdesp LIKE '%$desp%' OR i.saledesp LIKE '%$desp%')
+                                            $barcode_filter
+                                            AND i.status = 1
+                                            $ptype
+                                            $s_id
+                                             ORDER BY CAST(SUBSTRING(i.pcode, 3) AS UNSIGNED) ASC, v.v_id ASC";
 										$result = mysqli_query($con, $sql);
 
 										$table = "";
@@ -380,38 +298,58 @@ if (isset($_GET['variant_info_item_id'])) {
 											echo "There is no Product Available!!!";
 										} else {
 											$table .= "<table align='center' border='1' cellpadding='3' width='100%' style='border-collapse:collapse; font-size:12px;'>
-			<tr>
-				<th style='width:20px;'>S.<br>No.</th>
-				<th>Code</th>
-				<th>Type</th>
-				<th>Sub-Category</th>
-				<th>Description</th>
-				<th>HSN</th>
-				<th>Unit</th>
-				
-			</tr>
-			";
+												<tr>
+													<th style='width:20px;'>S.<br>No.</th>
+													<th>Code</th>
+													<th>Type</th>
+													<th>Sub-Category</th>
+													<th>Description</th>
+													<th>Size</th>
+													<th>Standard Color</th>
+													<th>Color</th>
+													<th>Stock in Store</th>
+													<th>Stock in Website</th>
+													<th>Purchase Rate</th>
+													<th>Taxable Value</th>
+													<th>Tax</th>
+													<th>Total Purchase Value</th>
+													<th>Total Purchase Rate</th>
+													<th>Selling Price</th>
+													<th>Ethic Selling Price</th>
+													<th>Status</th>
+												</tr>
+												";
 
 											?>
 											<form action='addpurchase.php' method='post' target='_blank'>
-												<table class="table datatable table-bordered table-actions">
+												<span style='float:right; '><button class="btn btn-info" type="button" onclick="getCheckedVIds()" >Generate Barcode</button> </span>
+
+												<span style='float:right;padding-right: 10px;'><button class="btn btn-warning" type="submit"
+														name="s10">Generate Purchase Invoice</button> </span>
+												<br><br>
+												<span style='color:red;'>**Double click on row to upload/edit photos</span>
+												<table id="viewproduct-display-table" class="table datatable table-bordered table-actions">
 													<thead>
 														<tr>
-															<th width="25"><span><input type='checkbox' name='all'
-																		onchange="selectall();" id='all' /></span></th>
-															<th style='width:10px;'>S.<br>No.</th>
+															<th width="58"><span><input type='checkbox' name='all' onchange="selectall();" id='all' /></span></th>
 															<th>Action</th>
-															<th>Pic</th>
-															<th>Material</th>
-															<th>Collection</th>
+															<th style='width:20px;'>S.<br>No.</th>
 															<th>Code</th>
-															<th>Type</th>
-															<th>Sub-Category</th>
+															<th>Pic</th>
+															<th>Color</th>
+															<th>Material</th>
 															<th>Description</th>
-															<th>HSN</th>
-															<th>Unit</th>
-															
-
+															<th>Sub-Category</th>
+															<th>Size</th>
+															<th>Stock in<br>Store</th>
+															<th>Stock in<br>Website</th>
+															<th>Purchase<br>Rate</th>
+															<th>Taxable<br>Value</th>
+															<th>Tax</th>
+															<th>Total <br>Pur. Value</th>
+															<th>Total <br>Pur. Rate</th>
+															<th>Ethic<br>Price</th>
+															<th>Status</th>
 														</tr>
 													</thead>
 													<tbody>
@@ -422,7 +360,8 @@ if (isset($_GET['variant_info_item_id'])) {
 															do {
 																$table .= "<tr>";
 																?>
-																<tr id="<?php echo $d[0]; ?>">
+																<tr id="<?php echo $d[0]; ?>"
+																	ondblclick="uploadpic('<?php echo $d[0]; ?>');">
 																	<?php
 																	$pic1 = mysqli_query($con, "select pic from variant_pic where v_id='$d[0]' order by rand() limit 1");
 
@@ -432,8 +371,7 @@ if (isset($_GET['variant_info_item_id'])) {
 																		$row = mysqli_fetch_assoc($pic1);
 																		$pic = $row['pic'] ?? '';
 																	}
-																	echo "<td><input type='checkbox' name='v_id[]' value='$d[0]'/></td>";
-																	echo "<td align='center'>$j</td>";
+																	ob_start(); echo "<td><input type='checkbox' name='v_id[]' value='$d[0]'/></td>"; $td_chk = ob_get_clean(); ob_start(); echo "<td align='center'>$j</td>"; $td_sno = ob_get_clean();
 																	$item = mysqli_fetch_row(mysqli_query($con, "select * from item_details where item_id='$d[1]'"));
 																	$sub_cat = mysqli_fetch_row(mysqli_query($con, "select * from pro_subcategory where s_id='$item[10]'"));
 																	$sub_cat = $sub_cat ?? 'N/A';
@@ -441,21 +379,41 @@ if (isset($_GET['variant_info_item_id'])) {
 																		$status = "<span class='badge badge-success'>Active</span>";
 																	else
 																		$status = "<span class='badge badge-danger'>Deactive</span>"; ?>
-																	<td>
+																	<?php ob_start(); ?><td>
 																		<button class="btn btn-info btn-rounded btn-condensed btn-sm"
 																			onClick="window.open('editproduct.php?item_id=<?php echo $d[1]; ?>','_blank');"
 																			type="button" title="Edit"><span
 																				class="fa fa-pencil"></span></button>
-																		<button class="btn btn-warning btn-rounded btn-condensed btn-sm"
-																			onClick="showVariantInfo('<?php echo $d[1]; ?>');"
-																			type="button" title="Detail"><span
-																				class="fa fa-info"></span></button>
-																	</td>
-																	<?php echo "<td>";
-																	if (!empty($pic)) {
-																		echo "<img src='$pic' height='80px' width='80px'/>";
-																	}
-																	echo "</td>";
+																		<button class="btn btn-success btn-rounded btn-condensed btn-sm"
+																			onClick="window.open('printproduct1.php?item_id=<?php echo $d[1]; ?>','_blank');"
+																			type="button"><span class="fa fa-print"
+																				title="Print Barcode"></span></button>
+
+																		<button class="btn btn-danger btn-rounded btn-condensed btn-sm"
+																			type="button"
+																			onclick="deleteVariant(<?php echo $d[0]; ?>, this);">
+																			<span class="fa fa-trash" title="Delete variant"></span>
+																		</button>
+
+																		<?php
+																		if ($item[8] == 1) {
+																			?>
+																			<button class="btn btn-warning btn-rounded btn-condensed btn-sm"
+																				onClick="changestatus('<?php echo $d[1]; ?>','0');"
+																				type="button"><span class="fa fa-toggle-on"
+																					title="Website Status ON"></span></button>
+																			<?php
+																		} else {
+																			?>
+																			<button class="btn btn-default btn-rounded btn-condensed btn-sm"
+																				onClick="changestatus('<?php echo $d[1]; ?>','1');"
+																				type="button"><span class="fa fa-toggle-off"
+																					title="Website Status OFF"></span></button>
+																			<?php
+																		}
+																		?>
+																	</td><?php $td_action = ob_get_clean(); ?>
+																	<?php ob_start(); echo "<td>"; if (!empty($pic)) { echo "<img src='$pic' height='80px' width='80px'/>"; } echo "</td>"; $td_pic = ob_get_clean(); 
 
 
 																	?>
@@ -478,32 +436,114 @@ if (isset($_GET['variant_info_item_id'])) {
 
 																	?>
 
-																	<td><?= htmlspecialchars($mat_type) ?></td>
-																	<td><?= htmlspecialchars($col_name) ?></td>
-
-
-
-																	<td><?php echo $item[1]; ?></td>
-																	<td><?php echo htmlspecialchars($item[2]); ?></td>
-																	<td><?php echo $sub_cat[2]; ?></td>
-																	<td><?php echo htmlspecialchars("$item[5]"); ?></td>
-																	<td><?php echo $item[4]; ?></td>
-																	<td><?php echo $item[6]; ?></td>
+																	<?php $td_mat="<td>".htmlspecialchars($mat_type)."</td>"; $td_col="<td>".htmlspecialchars($col_name)."</td>"; $td_code="<td>".$item[1]."</td>"; $td_type="<td>".htmlspecialchars($item[2])."</td>"; $td_subcat="<td>".$sub_cat[2]."</td>"; $td_desc="<td>".htmlspecialchars($item[5])."</td>"; $td_size="<td align='right'>".$d[2]."</td>"; $td_color="<td>".htmlspecialchars($d[9])."</td>"; ?>
 																	<?php
 																	$table .= "<td>$j</td>
 																				<td>$item[1]</td>
 																				<td>$item[2]</td>
 																				<td>$sub_cat[2]</td>
 																				<td>" . htmlspecialchars("$item[5]") . "</td>
-																				<td>$item[4]</td>
-																				<td>$item[6]</td>";
+																				<td align='right'>$d[2]</td>
+																				<td>" . htmlspecialchars($d[9]) . "</td>";
+
+																	$td_std_color = "<td align='right'>$d[3]</td>"; $td_stock_store = "<td align='right'>$d[6]</td>"; $td_stock_web = "<td align='right'>$d[7]</td>"; $td_pur_rate = "<td align='right'>$d[4]</td>";
+
+																	$table .= "<td align='right'>$d[3]</td>
+																				<td align='right'>$d[6]</td>
+																				<td align='right'>$d[7]</td>
+																				<td align='right'>$d[4]</td>
+																				";
+
+																	$tot[0] += $d[6];
+																	$tot[1] += $d[7];
+
+																	$amt = $d[6] * $d[4];
+																	$td_taxable = "<td align='right'>$amt</td>";
+																	$table .= "<td align='right'>$amt</td>";
+																	$tot[2] += $amt;
+																	$tax = round($amt * $item[7] / 100, 2);
+																	$tot[3] += $tax;
+																	$td_tax = "<td align='right'>" . ($tax) . "</td>";
+																	$table .= "<td align='right'>" . ($tax) . "</td>";
+
+																	$amt = $amt + $tax;
+																	$tot[4] += $amt;
+																	$td_tot_pur_val = "<td align='right'>$amt</td>";
+																	$table .= "<td align='right'>$amt</td>";
+																	if ($d[6] != 0)
+																		$rate = round($amt / $d[6], 2);
+																	else
+																		$rate = 0;
+																	$td_tot_pur_rate = "<td align='right'>$rate</td>";
+																	$table .= "<td align='right'>$rate</td>";
+																	$sell = round($rate + ($rate * 60 / 100), 2);
+																	$td_selling = "<td align='right'>$sell</td>";
+																	$table .= "<td align='right'>$sell</td>";
+																	$td_ethic = "<td align='right'>$d[5]</td>";
+																	$table .= "<td align='right'>$d[5]</td>"; ?>
+
+																	<?php
+																	ob_start(); echo "<td align='right'>$status"; 
+
+																	// Fetch labels only once
+																	$label_query = "SELECT l_id, name FROM label";
+																	$label_result = mysqli_query($con, $label_query);
+
+																	$current_label = $d[8];
+																	$labels = [];
+
+																	if ($label_result && mysqli_num_rows($label_result) > 0) {
+																		while ($row = mysqli_fetch_assoc($label_result)) {
+																			$labels[] = $row;
+																		}
+																	}
 																	?>
+
+																	<?php if (!empty($labels)): ?>
+																		<select class="label-select"
+																			data-vid="<?= htmlspecialchars($d[0]) ?>">
+																			<?php foreach ($labels as $label): ?>
+																				<option value="<?= htmlspecialchars($label['l_id']) ?>"
+																					<?= ($label['l_id'] == $current_label) ? 'selected' : '' ?>>
+																					<?= htmlspecialchars($label['name']) ?>
+																				</option>
+																			<?php endforeach; ?>
+																		</select>
+																	<?php endif; ?>
+
+																	<?php
+																	 echo "</td>"; $td_status = ob_get_clean(); $table .= "<td align='right'>$status</td>"; echo $td_chk.$td_action.$td_sno.$td_code.$td_pic.$td_color.$td_mat.$td_desc.$td_subcat.$td_size.$td_stock_store.$td_stock_web.$td_pur_rate.$td_taxable.$td_tax.$td_tot_pur_val.$td_tot_pur_rate.$td_ethic.$td_status;
+																	?>
+
+
 																</tr>
 																<?php
 																$j++;
-																	} while ($d = mysqli_fetch_array($result));
-																}
-																?>
+															} while ($d = mysqli_fetch_array($result));
+														}
+														$table .= "<tr>
+																<td colspan='8'>Total</td>
+																<td align='right'>" . round($tot[0], 2) . "</td>
+																<td align='right'>" . round($tot[1], 2) . "</td>
+																<td></td>
+																<td align='right'>" . round($tot[2], 2) . "</td>
+																<td align='right'>" . round($tot[3], 2) . "</td>
+																<td align='right'>" . round($tot[4], 2) . "</td>
+																<td colspan='4'></td>
+															</tr></table>";
+
+														echo "</tbody>
+																<tr style='font-weight:bold;'>
+																<td colspan='13'>Total</td>
+																<td align='right'>" . round($tot[0], 2) . "</td>
+																<td align='right'>" . round($tot[1], 2) . "</td>
+																<td></td>
+																<td align='right'>" . round($tot[2], 2) . "</td>
+																<td align='right'>" . round($tot[3], 2) . "</td>
+																<td align='right'>" . round($tot[4], 2) . "</td>
+																<td colspan='4'></td>
+																</tr>";
+														?>
 
 												</table>
 											</form>
@@ -539,23 +579,6 @@ if (isset($_GET['variant_info_item_id'])) {
 		<!-- END PAGE CONTENT -->
 	</div>
 	<!-- END PAGE CONTAINER -->
-
-	<div class="modal fade" id="variantInfoModal" tabindex="-1" role="dialog" aria-labelledby="variantInfoModalLabel">
-		<div class="modal-dialog modal-lg" role="document" style="width:95%;">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="variantInfoModalLabel">Variant Details</h4>
-				</div>
-				<div class="modal-body" id="variantInfoContent">
-					<div class="text-center">Loading...</div>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				</div>
-			</div>
-		</div>
-	</div>
 
 	<!-- MESSAGE BOX-->
 	<div class="message-box animated fadeIn" data-sound="alert" id="mb-remove-row">
@@ -609,6 +632,16 @@ if (isset($_GET['variant_info_item_id'])) {
 
 	<!-- START TEMPLATE -->
 
+	<script type="text/javascript">
+		$(function () {
+			$("#viewproduct-display-table").dataTable({
+				"pageLength": 65,
+				"lengthMenu": [[10, 30, 65, 130], [10, 30, 65, 130]],
+				"ordering": false,
+				"dom": "<'row'<'col-lg-6 col-sm-6'l><'col-lg-6 col-sm-6'f>><'row'<'col-sm-12'p>>rt<'row'<'col-lg-6 col-sm-6'i><'col-lg-6 col-sm-6'p>>"
+			});
+		});
+	</script>
 
 	<script type="text/javascript" src="js/plugins.js"></script>
 	<script type="text/javascript" src="js/actions.js"></script>
@@ -721,26 +754,76 @@ if (isset($_GET['variant_info_item_id'])) {
 		function ajaxError() {
 			alert("error");
 		}
+		function deleteVariant(v_id, btn) {
+			if (!confirm('Are you sure you want to delete this variant?')) return;
 
-		function showVariantInfo(item_id) {
-			$('#variantInfoContent').html('<div class="text-center">Loading...</div>');
-			$('#variantInfoModal').modal('show');
+			// Disable button to prevent double-clicks
+			btn.disabled = true;
 
-			$.ajax({
-				url: 'viewproduct2.php',
-				type: 'GET',
-				data: {
-					variant_info_item_id: item_id
-				},
-				success: function (response) {
-					$('#variantInfoContent').html(response);
-				},
-				error: function () {
-					$('#variantInfoContent').html('<div class="alert alert-danger">Unable to load variant details.</div>');
+			fetch('delete_variant.php', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: 'v_id=' + encodeURIComponent(v_id)
+			})
+			.then(function(response) { return response.json(); })
+			.then(function(data) {
+				if (data.success) {
+					// Remove the row from the DataTable without reloading
+					var $row = $(btn).closest('tr');
+					var dtTable = $('#viewproduct-display-table').dataTable();
+					dtTable.fnDeleteRow($row[0]);
+					// Re-sequence the S.No. column after deletion
+					renumberVariantRows(dtTable);
+					showVariantToast(data.message, 'success');
+				} else {
+					btn.disabled = false;
+					showVariantToast(data.message || 'Failed to delete variant.', 'error');
 				}
+			})
+			.catch(function() {
+				btn.disabled = false;
+				showVariantToast('An error occurred. Please try again.', 'error');
 			});
 		}
+
+		function renumberVariantRows(dtTable) {
+			// Iterate all rows currently in the DataTable body and update S.No. (column index 1)
+			$(dtTable).find('tbody tr').each(function(index) {
+				$(this).find('td').eq(1).text(index + 1);
+			});
+		}
+
+		function showVariantToast(message, type) {
+			var toast = document.getElementById('variant-delete-toast');
+			toast.textContent = message;
+			toast.className = 'variant-toast variant-toast-' + type + ' variant-toast-show';
+			setTimeout(function() {
+				toast.className = toast.className.replace('variant-toast-show', '');
+			}, 3000);
+		}
 	</script>
+	<div id="variant-delete-toast" class="variant-toast"></div>
+	<style>
+		.variant-toast {
+			position: fixed;
+			bottom: 30px;
+			right: 30px;
+			z-index: 99999;
+			padding: 12px 22px;
+			border-radius: 5px;
+			font-size: 14px;
+			font-weight: bold;
+			color: #fff;
+			opacity: 0;
+			transition: opacity 0.4s ease;
+			pointer-events: none;
+		}
+		.variant-toast-show {
+			opacity: 1;
+		}
+		.variant-toast-success { background: #27ae60; }
+		.variant-toast-error   { background: #c0392b; }
+	</style>
 	<script>
 		$(document).on('change', '.label-select', function () {
 			var v_id = $(this).data('vid');
@@ -777,7 +860,85 @@ if (isset($_GET['variant_info_item_id'])) {
 			}
 
 		});
-		
+		function getCheckedVIds() 
+		{
+			// Recheck current page selected items also
+			$('input[name="v_id[]"]:checked').each(function () 
+			{
+				let value = $(this).val();
+				if (!selectedVIds.includes(value)) {
+					selectedVIds.push(value);
+				}
+			});
+
+			// Open in new tab and pass data
+			let form = document.createElement('form');
+
+			form.method = 'POST';
+			form.action = 'barcodeproduct2.php';
+			form.target = '_blank';
+
+			// Pass all selected v_id[]
+			selectedVIds.forEach(function(id) {
+
+				let input = document.createElement('input');
+
+				input.type = 'hidden';
+				input.name = 'v_id[]';
+				input.value = id;
+
+				form.appendChild(input);
+
+			});
+
+			document.body.appendChild(form);
+
+			form.submit();
+
+			document.body.removeChild(form);
+			console.log(selectedVIds);
+		}
+
+		$(document).ready(function() {
+			var $scanInput = $('#scanbarcode');
+			// 1. Set default focus
+			$scanInput.focus();
+
+			// 2. Automatically submit form on scan
+			// Many barcode scanners act as a keyboard and end with an 'Enter' keypress.
+			$scanInput.on('keypress', function(e) {
+				if (e.which == 13) {
+					e.preventDefault();
+					var val = $.trim($(this).val());
+					if (val.length > 0) {
+						// Append a hidden input so PHP knows 'open' was triggered
+						$('<input>').attr({
+							type: 'hidden',
+							name: 'open',
+							value: '1'
+						}).appendTo('form[name="frm2"]');
+						$('form[name="frm2"]').submit();
+					}
+				}
+			});
+
+			// Fallback for scanners that do not send Enter but type fast
+			var scanTimer;
+			$scanInput.on('input', function() {
+				clearTimeout(scanTimer);
+				var val = $.trim($(this).val());
+				if (val.length > 0) {
+					scanTimer = setTimeout(function() {
+						$('<input>').attr({
+							type: 'hidden',
+							name: 'open',
+							value: '1'
+						}).appendTo('form[name="frm2"]');
+						$('form[name="frm2"]').submit();
+					}, 1000); // Wait 1000ms after last input
+				}
+			});
+		});
 	</script>
 
 </body>

@@ -175,8 +175,9 @@ if (isset($_POST['add_product'])) {
 		for ($i = 0; $i < count($color) && $variant_count < $max_variants; $i++) 
 		{
 			$c = mysqli_real_escape_string($con, $color[$i]);
+			if (strpos($c, ' ') !== false) { $msg1 = 'Spaces are not allowed in Color.'; goto end; }
 			$sc = mysqli_real_escape_string($con, $standard_color[$i]);
-			if ($c != '') {
+			if ($sc != '') {
 				for ($j = 0; $j < count($sizes); $j++) {
 					if (!empty($quantities[$j][$i]) && (int) $quantities[$j][$i] > 0) {
 						$v_id = 'temp_' . $itemid . '_' . $j . '_' . $i;
@@ -201,8 +202,9 @@ if (isset($_POST['add_product'])) {
 		$nqty = array_slice($_POST['nqty'] ?? [], 0, 50);
 		for ($i = 0; $i < count($color) && $variant_count < $max_variants; $i++) {
 			$c = mysqli_real_escape_string($con, $color[$i]);
+			if (strpos($c, ' ') !== false) { $msg1 = 'Spaces are not allowed in Color.'; goto end; }
 			$sc = mysqli_real_escape_string($con, $standard_color[$i]);
-			if ($c != '' && !empty($nqty[$i]) && (int) $nqty[$i] > 0) {
+			if ($sc != '' && !empty($nqty[$i]) && (int) $nqty[$i] > 0) {
 				$v_id = 'temp_' . $itemid . '_' . $i;
 				$product['variants'][] = [
 					'v_id' => $v_id,
@@ -352,13 +354,12 @@ if (isset($_REQUEST['s1']))
 				$edsellrate = floatval($_REQUEST['edsellrate'][$itemid][$variant_index] ?? $variant['edsellrate']);
 				$tax = floatval($_REQUEST['taxper'][$itemid][$variant_index] ?? $product['tax_percent']);
 				if ($stock > 0) {
-                    $concatenated_color = $variant['color'] . " " . $variant['standard_color'];
 					mysqli_stmt_bind_param(
 						$stmt_variant,
 						'isssiids',
 						$actual_item_id,
 						$variant['size'],
-						$concatenated_color,
+						$variant['color'],
 						$stock,
 						$webstock,
 						$purerate,
@@ -542,7 +543,7 @@ while($c=mysqli_fetch_assoc($c1))
 				</thead>
 				<tbody>
 					<tr>
-						<td><div class="form-group"><input type="text" class="form-control" name="color[]" /></div></td>
+						<td><div class="form-group"><input type="text" class="form-control" name="color[]" pattern="[^\\s]+" oninput="this.value = this.value.replace(/\\s/g, '')" /></div></td>
 						<td><div class="form-group"><select class="form-control" name="standard_color[]" required>
                                 ${colorOptions}
                             </select></div></td>
@@ -569,7 +570,7 @@ while($c=mysqli_fetch_assoc($c1))
 				</thead>
 				<tbody>
 					<tr>
-						<td><div class="form-group"><input type="text" class="form-control" name="color[]" /></div></td>
+						<td><div class="form-group"><input type="text" class="form-control" name="color[]" pattern="[^\\s]+" oninput="this.value = this.value.replace(/\\s/g, '')" /></div></td>
 						<td><div class="form-group"><select class="form-control" name="standard_color[]" required>
                                 ${colorOptions}
                             </select></div></td>

@@ -73,7 +73,7 @@ $variants = mysqli_query($con, "SELECT * FROM variant WHERE v_id IN ($id_list) O
 													<?php } ?>
 												</td>
 												<td><?php echo htmlspecialchars($d[2]); ?></td>
-												<td><?php echo htmlspecialchars($d[3]); ?></td>
+												<td><?php echo $d[3] . ' ' . htmlspecialchars($d[9]); ?></td>
 												<td>
 													<input type="number" class="form-control" name="stock[<?php echo htmlspecialchars($d[0]); ?>]" value="<?php echo htmlspecialchars($d[6]); ?>" min="0" step="1">
 												</td>

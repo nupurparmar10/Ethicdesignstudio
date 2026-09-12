@@ -299,23 +299,21 @@ if (isset($_REQUEST['msg1'])) {
 										} else {
 											$table .= "<table align='center' border='1' cellpadding='3' width='100%' style='border-collapse:collapse; font-size:12px;'>
 												<tr>
-													<th style='width:20px;'>S.<br>No.</th>
+													<th>S.No.</th>
 													<th>Code</th>
-													<th>Type</th>
-													<th>Sub-Category</th>
-													<th>Description</th>
-													<th>Size</th>
-													<th>Standard Color</th>
 													<th>Color</th>
+													<th>Material</th>
+													<th>Description</th>
+													<th>Sub-Category</th>
+													<th>Size</th>
 													<th>Stock in Store</th>
 													<th>Stock in Website</th>
 													<th>Purchase Rate</th>
 													<th>Taxable Value</th>
 													<th>Tax</th>
-													<th>Total Purchase Value</th>
-													<th>Total Purchase Rate</th>
-													<th>Selling Price</th>
-													<th>Ethic Selling Price</th>
+													<th>Total Pur. Value</th>
+													<th>Total Pur. Rate</th>
+													<th>Ethic Price</th>
 													<th>Status</th>
 												</tr>
 												";
@@ -331,20 +329,17 @@ if (isset($_REQUEST['msg1'])) {
 												<table id="viewproduct-display-table" class="table datatable table-bordered table-actions">
 													<thead>
 														<tr>
-															<th width="58"><span><input type='checkbox' name='all'
-																		onchange="selectall();" id='all' /></span></th>
+															<th width="58"><span><input type='checkbox' name='all' onchange="selectall();" id='all' /></span></th>
 															<th style='width:20px;'>S.<br>No.</th>
 															<th>Action</th>
-															<th>Pic</th>
-															<th>Material</th>
-															<th>Collection</th>
+															
 															<th>Code</th>
-															<th>Type</th>
-															<th>Sub-Category</th>
-															<th>Description</th>
-															<th>Size</th>
-															<th>Standard Color</th>
+															<th>Pic</th>
 															<th>Color</th>
+															<th>Material</th>
+															<th>Description</th>
+															<th>Sub-Category</th>
+															<th>Size</th>
 															<th>Stock in<br>Store</th>
 															<th>Stock in<br>Website</th>
 															<th>Purchase<br>Rate</th>
@@ -352,17 +347,15 @@ if (isset($_REQUEST['msg1'])) {
 															<th>Tax</th>
 															<th>Total <br>Pur. Value</th>
 															<th>Total <br>Pur. Rate</th>
-															<th>Selling<br>Price</th>
 															<th>Ethic<br>Price</th>
 															<th>Status</th>
-
 														</tr>
 													</thead>
 													<tbody>
 														<?php
 														if ($d = mysqli_fetch_row($result)) {
 															$j = 1;
-															$tot = array('0', '0', '0', '0', '0');
+															$tot = array('0', '0', '0', '0', '0', '0');
 															do {
 																$table .= "<tr>";
 																?>
@@ -377,8 +370,7 @@ if (isset($_REQUEST['msg1'])) {
 																		$row = mysqli_fetch_assoc($pic1);
 																		$pic = $row['pic'] ?? '';
 																	}
-																	echo "<td><input type='checkbox' name='v_id[]' value='$d[0]'/></td>";
-																	echo "<td align='center'>$j</td>";
+																	ob_start(); echo "<td><input type='checkbox' name='v_id[]' value='$d[0]'/></td>"; $td_chk = ob_get_clean(); ob_start(); echo "<td align='center'>$j</td>"; $td_sno = ob_get_clean();
 																	$item = mysqli_fetch_row(mysqli_query($con, "select * from item_details where item_id='$d[1]'"));
 																	$sub_cat = mysqli_fetch_row(mysqli_query($con, "select * from pro_subcategory where s_id='$item[10]'"));
 																	$sub_cat = $sub_cat ?? 'N/A';
@@ -386,7 +378,7 @@ if (isset($_REQUEST['msg1'])) {
 																		$status = "<span class='badge badge-success'>Active</span>";
 																	else
 																		$status = "<span class='badge badge-danger'>Deactive</span>"; ?>
-																	<td>
+																	<?php ob_start(); ?><td>
 																		<button class="btn btn-info btn-rounded btn-condensed btn-sm"
 																			onClick="window.open('editproduct.php?item_id=<?php echo $d[1]; ?>','_blank');"
 																			type="button" title="Edit"><span
@@ -419,12 +411,8 @@ if (isset($_REQUEST['msg1'])) {
 																			<?php
 																		}
 																		?>
-																	</td>
-																	<?php echo "<td>";
-																	if (!empty($pic)) {
-																		echo "<img src='$pic' height='80px' width='80px'/>";
-																	}
-																	echo "</td>";
+																	</td><?php $td_action = ob_get_clean(); ?>
+																	<?php ob_start(); echo "<td>"; if (!empty($pic)) { echo "<img src='$pic' height='80px' width='80px'/>"; } echo "</td>"; $td_pic = ob_get_clean(); 
 
 
 																	?>
@@ -447,69 +435,52 @@ if (isset($_REQUEST['msg1'])) {
 
 																	?>
 
-																	<td><?= htmlspecialchars($mat_type) ?></td>
-																	<td><?= htmlspecialchars($col_name) ?></td>
-
-
-
-																	<td><?php echo $item[1]; ?></td>
-																	<td><?php echo htmlspecialchars($item[2]); ?></td>
-																	<td><?php echo $sub_cat[2]; ?></td>
-																	<td><?php echo htmlspecialchars("$item[5]"); ?></td>
-																	<td align='right'><?php echo $d[2]; ?></td>
-																	<td><?php echo htmlspecialchars($d[9]); ?></td>
+																	<?php $td_mat="<td>".htmlspecialchars($mat_type)."</td>"; $td_col="<td>".htmlspecialchars($col_name)."</td>"; $td_code="<td>".$item[1]."</td>"; $td_type="<td>".htmlspecialchars($item[2])."</td>"; $td_subcat="<td>".$sub_cat[2]."</td>"; $td_desc="<td>".htmlspecialchars($item[5])."</td>"; $td_size="<td align='right'>".$d[2]."</td>"; $td_color="<td>".htmlspecialchars($d[3])." ".htmlspecialchars($d[9])."</td>"; ?>
 																	<?php
 																	$table .= "<td>$j</td>
 																				<td>$item[1]</td>
-																				<td>$item[2]</td>
-																				<td>$sub_cat[2]</td>
+																				<td>$d[3] " . htmlspecialchars($d[9]) . "</td>
+																				<td>$mat_type</td>
 																				<td>" . htmlspecialchars("$item[5]") . "</td>
+																				<td>$sub_cat[2]</td>
 																				<td align='right'>$d[2]</td>
-																				<td>" . htmlspecialchars($d[9]) . "</td>";
-
-																	echo "<td align='right'>$d[3]</td>
-																			<td align='right'>$d[6]</td>
-																			<td align='right'>$d[7]</td>
-																			<td align='right'>$d[4]</td>
-																			
-																			";
-
-																	$table .= "<td align='right'>$d[3]</td>
 																				<td align='right'>$d[6]</td>
 																				<td align='right'>$d[7]</td>
 																				<td align='right'>$d[4]</td>
 																				";
 
+																	$td_std_color = "<td align='right'>$d[3] $d[9]</td>"; $td_stock_store = "<td align='right'>$d[6]</td>"; $td_stock_web = "<td align='right'>$d[7]</td>"; $td_pur_rate = "<td align='right'>$d[4]</td>";
+
 																	$tot[0] += $d[6];
 																	$tot[1] += $d[7];
 
 																	$amt = $d[6] * $d[4];
-																	echo "<td align='right'>$amt</td>";
+																	$td_taxable = "<td align='right'>$amt</td>";
 																	$table .= "<td align='right'>$amt</td>";
 																	$tot[2] += $amt;
 																	$tax = round($amt * $item[7] / 100, 2);
 																	$tot[3] += $tax;
-																	echo "<td align='right'>" . ($tax) . "</td>";
+																	$td_tax = "<td align='right'>" . ($tax) . "</td>";
 																	$table .= "<td align='right'>" . ($tax) . "</td>";
 
 																	$amt = $amt + $tax;
 																	$tot[4] += $amt;
-																	echo "<td align='right'>$amt</td>";
+																	$td_tot_pur_val = "<td align='right'>$amt</td>";
 																	$table .= "<td align='right'>$amt</td>";
 																	if ($d[6] != 0)
 																		$rate = round($amt / $d[6], 2);
 																	else
 																		$rate = 0;
-																	echo "<td align='right'>$rate</td>";
+																	$td_tot_pur_rate = "<td align='right'>$rate</td>";
 																	$table .= "<td align='right'>$rate</td>";
 																	$sell = round($rate + ($rate * 60 / 100), 2);
-																	echo "<td align='right'>$sell</td>";
-																	$table .= "<td align='right'>$sell</td>";
-																	echo "<td align='right'>$d[5]</td>";
+																	$td_selling = "<td align='right'>$sell</td>";
+																	$tot[5] += $d[5];
+																	$td_ethic = "<td align='right'>$d[5]</td>";
 																	$table .= "<td align='right'>$d[5]</td>"; ?>
 
 																	<?php
-																	echo "<td align='right'>$status";
+																	ob_start(); echo "<td align='right'>$status"; 
 
 																	// Fetch labels only once
 																	$label_query = "SELECT l_id, name FROM label";
@@ -538,37 +509,40 @@ if (isset($_REQUEST['msg1'])) {
 																	<?php endif; ?>
 
 																	<?php
-																	echo "</td>";
-																	$table .= "<td align='right'>$status</td>";
+																	 echo "</td>"; $td_status = ob_get_clean(); $table .= "<td align='right'>$status</td>"; echo $td_chk.$td_sno.$td_action.$td_code.$td_pic.$td_color.$td_mat.$td_desc.$td_subcat.$td_size.$td_stock_store.$td_stock_web.$td_pur_rate.$td_taxable.$td_tax.$td_tot_pur_val.$td_tot_pur_rate.$td_ethic.$td_status;
 																	?>
 
 
-																</tr>
+																											</tr>
 																<?php
 																$j++;
 															} while ($d = mysqli_fetch_array($result));
 														}
 														$table .= "<tr>
-																<td colspan='8'>Total</td>
+																<td colspan='7'>Total</td>
 																<td align='right'>" . round($tot[0], 2) . "</td>
 																<td align='right'>" . round($tot[1], 2) . "</td>
 																<td></td>
 																<td align='right'>" . round($tot[2], 2) . "</td>
 																<td align='right'>" . round($tot[3], 2) . "</td>
 																<td align='right'>" . round($tot[4], 2) . "</td>
-																<td colspan='4'></td>
+																<td></td>
+																<td align='right'>" . round($tot[5], 2) . "</td>
+																<td></td>
 															</tr></table>";
 
 														echo "</tbody>
 																<tr style='font-weight:bold;'>
-																<td colspan='13'>Total</td>
+																<td colspan='10'>Total</td>
 																<td align='right'>" . round($tot[0], 2) . "</td>
 																<td align='right'>" . round($tot[1], 2) . "</td>
 																<td></td>
 																<td align='right'>" . round($tot[2], 2) . "</td>
 																<td align='right'>" . round($tot[3], 2) . "</td>
 																<td align='right'>" . round($tot[4], 2) . "</td>
-																<td colspan='4'></td>
+																<td></td>
+																<td align='right'>" . round($tot[5], 2) . "</td>
+																<td></td>
 																</tr>";
 														?>
 
