@@ -163,7 +163,7 @@ $d=mysqli_fetch_row($d1);
     padding-bottom: 1.4mm;
     margin-bottom: 1.6mm;
   }
-  .brand img { height: 8mm; display: block; }
+  .brand img { height: 12mm; display: block; }
   .invoice-tag {
     text-align: right;
   }
@@ -225,7 +225,7 @@ $d=mysqli_fetch_row($d1);
     text-align: center;
     line-height: 3mm;
   }
-  .party-box.billed .icon-line .ic { background: #7a715f; }
+  .party-box.billed .icon-line .ic { background: #e0672c; }
   .icon-line .txt { flex: 1; word-break: break-word; }
   .gstin-tag {
     margin-top: 1.2mm;
@@ -351,7 +351,7 @@ $d=mysqli_fetch_row($d1);
     font-size: 6.2pt;
     color: #555;
   }
-  .qr-col img { width: 15mm; height: 15mm; display: block; margin: 0 auto 0.6mm; border: 0.5pt solid #ddc9bd; padding: 0.6mm; }
+  .qr-col img { width: 20mm; height: 20mm; display: block; margin: 0 auto 0.6mm; border: 0.5pt solid #ddc9bd; padding: 0.6mm; }
 
   .bank-col {
     flex: 1;
@@ -368,9 +368,9 @@ $d=mysqli_fetch_row($d1);
   .signatures {
     display: flex;
     justify-content: space-between;
-    margin-top: 2.6mm;
+    margin-top: 10.6mm;
     padding-top: 1.2mm;
-    border-top: 0.6pt solid #e0672c;
+    border-bottom: 0.6pt solid #e0672c;
     font-size: 6.8pt;
     font-weight: 600;
   }
@@ -487,7 +487,14 @@ $d=mysqli_fetch_row($d1);
       <div class="tax-invoice">TAX INVOICE</div>
       <div class="meta-row"><b>Invoice No.:</b> <?php echo $d[3]; ?></div>
       <div class="meta-row"><b>Date:</b> <?php if($d[1]!="0000-00-00"){ $date= DateTime::createFromFormat('Y-m-d', $d[1]); echo $date->format('M d, Y'); } ?></div>
+      <?php
+      if($emp[0]!="")
+      {
+      ?>
       <div class="meta-row"><b>Salesman:</b> <?php echo ($emp[0] != "") ? $emp[0] : "&mdash;"; ?></div>
+      <?php
+      }
+      ?>
     </div>
   </div>
 
@@ -496,14 +503,18 @@ $d=mysqli_fetch_row($d1);
       <div class="party-title">Ethic Designs LLP</div>
       <div class="line"><b>Main Branch:</b> 2370/71, Rani No Haziro, Manek Chowk, Ahmedabad &ndash; 380001.</div>
       <div class="line"><b>Branch(2):</b> 100, Lavanya Society, Nr. Jivraj Mehta Hospital, Vasna, Ahmedabad &ndash; 380007.</div>
-      <div class="icon-line"><span class="ic">&#9742;</span><span class="txt">9824077818, 9825162255, 8980060002</span></div>
+      <div class="icon-line"><span class="ic">&#128241;</span><span class="txt">9824077818, 9825162255, 8980060002</span></div>
       <div class="icon-line"><span class="ic">@</span><span class="txt">ethicdesignstudio@gmail.com</span></div>
       <div class="icon-line"><span class="ic">&#127760;</span><span class="txt">www.ethicdesignstudio.com</span></div>
       <div class="icon-line">
-        <span class="ic">&#128247;</span>
+        <span class="ic" style="background-color:transparent;color: black;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 448 512" fill="currentColor" style="vertical-align: text-bottom;">
+            <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/>
+          </svg>
+        </span>
         <span class="txt">
           <a href="https://www.instagram.com/ethicdesignstudio" target="_blank" style="text-decoration: none; color: inherit;">
-            instagram.com/ethicdesignstudio
+           @ethicdesignstudio
           </a>
         </span>
       </div>
@@ -514,12 +525,21 @@ $d=mysqli_fetch_row($d1);
     <div class="party-box billed">
       <div class="party-title">Billed To</div>
       <div class="company-name">M/s <?php echo (!empty($k[0])) ? $k[0] : ''; ?></div>
-      <div class="icon-line"><span class="ic">&#9742;</span><span class="txt"><?php echo (!empty($p1[4])) ? $p1[4] : ((!empty($d[8])) ? $d[8] : '-'); ?></span></div>
+      <div class="icon-line"><span class="ic">&#128241;</span><span class="txt"><?php echo (!empty($p1[4])) ? $p1[4] : ((!empty($d[8])) ? $d[8] : '-'); ?></span></div>
       <div class="icon-line"><span class="ic">@</span><span class="txt"><?php echo (!empty($p1[5])) ? $p1[5] : '-'; ?></span></div>
       <div class="icon-line"><span class="ic">&#128100;</span><span class="txt"><?php echo (!empty($p1[1])) ? $p1[1] : '-'; ?></span></div>
-      <span class="gstin-tag">GSTIN: <?php echo (!empty($p1[4])) ? $p1[4] : '-'; ?></span>
+      <span class="gstin-tag">GSTIN: <?php echo (!empty($p1[3])) ? $p1[3] : '-'; ?></span>
       <div class="pay-strip">
-        <span><b>Paid By:</b> <?php if($d[7]=="3") echo "Cash"; else if($d[7]=="Credit") echo "Credit"; else echo "Cheque"; ?></span>
+        <span><b>Paid By:</b> <?php 
+        if($d[7]=="3") {
+            echo "Cash"; 
+        } else if($d[7]=="Credit") {
+            echo "Credit"; 
+        } else {
+            $paid_led = mysqli_fetch_row(mysqli_query($con, "select name from ledger_accounts where ledger_id='$d[7]'"));
+            echo ($paid_led[0] != "") ? $paid_led[0] : "Cheque";
+        } 
+        ?></span>
       </div>
     </div>
   </div>
@@ -644,12 +664,10 @@ $d=mysqli_fetch_row($d1);
 
   <div class="bottom-grid">
     <div class="notes-col">
-      <div class="h">Notes</div>
+      <div class="h">Terms & Condition</div>
       <ol>
         <li>Warranty as per company rules &amp; conditions.</li>
         <li>Goods once sold can&rsquo;t be returned or exchanged.</li>
-        <li>Rate should be valid for 7 days only.</li>
-        <li>Packing &amp; Transportation charges extra.</li>
         <li>Payment should be 100% advance on order.</li>
         <li>All subject to Ahmedabad (Gujarat) jurisdiction.</li>
       </ol>

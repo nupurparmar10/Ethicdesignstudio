@@ -357,9 +357,8 @@ if (isset($_REQUEST['msg1'])) {
 															$j = 1;
 															$tot = array('0', '0', '0', '0', '0', '0');
 															do {
-																$table .= "<tr>";
 																?>
-																<tr id="<?php echo $d[0]; ?>"
+																<tr id="<?php echo $d[0]; ?>" <?php if($d[6] <= 0) echo 'style="background-color: #ffcccc;"'; ?>
 																	ondblclick="uploadpic('<?php echo $d[0]; ?>');">
 																	<?php
 																	$pic1 = mysqli_query($con, "select pic from variant_pic where v_id='$d[0]' order by rand() limit 1");

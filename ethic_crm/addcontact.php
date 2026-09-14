@@ -9,13 +9,13 @@
 		if($l=mysqli_fetch_row($lid1))
 			$id=$l[0]+1;
 		
-		mysqli_query($con,"insert into contact set c_id='$id', cname='$_REQUEST[cname]', mob1='$_REQUEST[mob1]', mob2='$_REQUEST[mob2]', mob3='$_REQUEST[mob3]', email='$_REQUEST[email]', website='$_REQUEST[website]', firmname='$_REQUEST[fname]', address='$_REQUEST[address]', remark='$_REQUEST[remark]', groupname='$_REQUEST[group]'");
+		mysqli_query($con,"insert into contact set c_id='$id', cname='$_REQUEST[cname]', mob1='$_REQUEST[mob1]', email='$_REQUEST[email]', website='$_REQUEST[website]', address='$_REQUEST[address]', remark='$_REQUEST[remark]', category='$_REQUEST[category]'");
 		
 		$msg="Contact added successfully!!!";
 	}
 	if(isset($_REQUEST['s3']))
 	{	
-		mysqli_query($con,"update contact set cname='$_REQUEST[cname]', mob1='$_REQUEST[mob1]', mob2='$_REQUEST[mob2]', mob3='$_REQUEST[mob3]', email='$_REQUEST[email]', website='$_REQUEST[website]', firmname='$_REQUEST[fname]', address='$_REQUEST[address]', remark='$_REQUEST[remark]', groupname='$_REQUEST[group]' where c_id='$_REQUEST[c_id]'");
+		mysqli_query($con,"update contact set cname='$_REQUEST[cname]', mob1='$_REQUEST[mob1]', email='$_REQUEST[email]', website='$_REQUEST[website]',  address='$_REQUEST[address]', remark='$_REQUEST[remark]', category='$_REQUEST[category]' where c_id='$_REQUEST[c_id]'");
 		header("Location: viewcontact.php?msg=set");die;
 	}
 ?>
@@ -122,16 +122,7 @@
                                         </div>
                                     </div> 
 									<div class="form-group">
-                                        <label class="col-md-3 col-xs-12 control-label">Firm Name</label>
-                                        <div class="col-md-6 col-xs-12">                                            
-                                            <div class="input-group">
-                                                <span class="input-group-addon"><span class="fa fa-pencil"></span></span>
-                                                <input type="text" class="form-control" name="fname" value='<?php echo $c[7]; ?>' />
-                                            </div>                                            
-                                        </div>
-                                    </div> 
-									<div class="form-group">
-                                        <label class="col-md-3 col-xs-12 control-label">Mobile 1</label>
+                                        <label class="col-md-3 col-xs-12 control-label">Mobile </label>
                                         <div class="col-md-6 col-xs-12">                                            
                                             <div class="input-group">
                                                 <span class="input-group-addon"><span class="fa fa-pencil"></span></span>
@@ -140,29 +131,11 @@
                                         </div>
                                     </div> 
 									<div class="form-group">
-                                        <label class="col-md-3 col-xs-12 control-label">Mobile 2</label>
-                                        <div class="col-md-6 col-xs-12">                                            
-                                            <div class="input-group">
-                                                <span class="input-group-addon"><span class="fa fa-pencil"></span></span>
-                                                <input type="text" class="form-control" name="mob2" value='<?php echo $c[3]; ?>' onkeyup="return allowOnly10Numeric(this);" oninput="allowOnly10Numeric(this);"/>
-                                            </div>                                            
-                                        </div>
-                                    </div> 
-									<div class="form-group">
-                                        <label class="col-md-3 col-xs-12 control-label">Mobile 3</label>
-                                        <div class="col-md-6 col-xs-12">                                            
-                                            <div class="input-group">
-                                                <span class="input-group-addon"><span class="fa fa-pencil"></span></span>
-                                                <input type="text" class="form-control" name="mob3" value='<?php echo $c[4]; ?>' onkeyup="return allowOnly10Numeric(this);" oninput="allowOnly10Numeric(this);"/>
-                                            </div>                                            
-                                        </div>
-                                    </div> 
-									<div class="form-group">
                                         <label class="col-md-3 col-xs-12 control-label">E-Mail ID</label>
                                         <div class="col-md-6 col-xs-12">                                            
                                             <div class="input-group">
                                                 <span class="input-group-addon"><span class="fa fa-pencil"></span></span>
-                                                <input type="text" class="form-control" name="email" value='<?php echo $c[5]; ?>' required/>
+                                                <input type="text" class="form-control" name="email" value='<?php echo $c[3]; ?>' required/>
                                             </div>                                            
                                         </div>
                                     </div> 
@@ -171,7 +144,7 @@
                                         <div class="col-md-6 col-xs-12">                                            
                                            <div class="input-group">
                                                 <span class="input-group-addon"><span class="fa fa-pencil"></span></span>
-                                                <input type="text" class="form-control" name="website" value='<?php echo $c[6]; ?>' />
+                                                <input type="text" class="form-control" name="website" value='<?php echo $c[4]; ?>' />
                                             </div>                                          
                                         </div>
                                     </div> 														
@@ -179,7 +152,7 @@
                                         <label class="col-md-3 col-xs-12 control-label">Address</label>
                                         <div class="col-md-6 col-xs-12">                                            
                                             <div class="input-group col-md-12">
-                                                <textarea class="form-control" rows="5" name="address"><?php echo $c[8]; ?></textarea>
+                                                <textarea class="form-control" rows="5" name="address"><?php echo $c[5]; ?></textarea>
                                             </div>                                            
                                         </div>
                                     </div>
@@ -188,16 +161,19 @@
                                         <label class="col-md-3 col-xs-12 control-label">Remark</label>
                                         <div class="col-md-6 col-xs-12">                                            
                                             <div class="input-group col-md-12">
-                                                <textarea class="form-control" rows="5" name="remark"><?php echo $c[9]; ?></textarea>
+                                                <textarea class="form-control" rows="5" name="remark"><?php echo $c[6]; ?></textarea>
                                             </div>                                            
                                         </div>
                                     </div>
 									<div class="form-group">
-                                        <label class="col-md-3 col-xs-12 control-label">Group</label>
+                                        <label class="col-md-3 col-xs-12 control-label">Category</label>
                                         <div class="col-md-6 col-xs-12">                                            
                                            <div class="input-group">
                                                 <span class="input-group-addon"><span class="fa fa-pencil"></span></span>
-                                                <input type="text" class="form-control" name="group" value='<?php echo $c[10]; ?>' required />
+                                                <select name="category" class="form-control" />
+                                                    <option value="Customer" <?php if($c[7]=='Customer') echo 'selected'; ?> >Customer</option>
+                                                    <option value="Vendor" <?php if($c[7]=='Vendor') echo 'selected'; ?> >Vendor</option>
+                                                </select>
                                             </div>                                          
                                         </div>
                                     </div> 	

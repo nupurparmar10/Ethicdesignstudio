@@ -61,7 +61,7 @@
 			{
 				if($person!="" || $address!=""  || $tinno!=""  || $mobile!="" || $email!="" )
 				{
-					mysqli_query($con,"update ledger_details set contact_person='$person',  address='$address',  tinno='$tinno', , mobile='$mobile',  email='$email' , opening_bal='$opbal' where ledger_id=$id");
+					mysqli_query($con,"update ledger_details set contact_person='$person',  address='$address',  tinno='$tinno', mobile='$mobile',  email='$email' where ledger_id=$id");
 				}
 				else
 				{
@@ -72,7 +72,7 @@
 			{
 				if($person!="" || $desgn!="" || $address!="" || $city!="" || $state!="" || $tinno!="" || $panno!="" || $mobile!="" || $fax!="" || $email!="" || $website!="")
 				{
-					mysqli_query($con,"insert into ledger_details set ledger_id=$id, contact_person='$person', address='$address', tinno='$tinno', mobile='$mobile', email='$email' , opening_bal='$opbal'");
+					mysqli_query($con,"insert into ledger_details set ledger_id=$id, contact_person='$person', address='$address', tinno='$tinno', mobile='$mobile', email='$email'");
 				}
 			}
 			header("Location: viewledger.php?msg=set"); die;

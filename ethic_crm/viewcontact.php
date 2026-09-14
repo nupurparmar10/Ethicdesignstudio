@@ -153,7 +153,6 @@
 												<label class="col-md-2 col-xs-2">Mobile</label>
 												<label class="col-md-2 col-xs-2">Email</label>
 												<label class="col-md-2 col-xs-2">Website</label>
-												<label class="col-md-2 col-xs-2">Firm Name</label>
 											</div>
 											<div class="row">
 												 <div class="col-md-2 col-xs-12">  
@@ -171,26 +170,18 @@
 												 <div class="col-md-2 col-xs-12">  
 													<input type="text" class="form-control" name="website" id="website" />
 												</div>
-												 <div class="col-md-2 col-xs-12">  
-													<input type="text" class="form-control" name="fname" id="fname"/>
-												</div>
 											</div>
 											<div class="row">
-												<label class="col-md-2 col-xs-2">Group</label>
+												<label class="col-md-2 col-xs-2">Category</label>
 											</div>
 											<div class="row">
-												 <div class="col-md-2 col-xs-12">  
-													<select class="form-control" name="group">
-														<option value=''>--Select--</option>
-														<?php
-															$c1=mysqli_query($con,"select distinct(groupname) from contact");
-															while($c=mysqli_fetch_row($c1))
-															{
-																echo "<option>$c[0]</option>";
-															}
-														?>
+												<div class="col-md-2 col-xs-12">  
+													<select class="form-control" name="category" id="category">
+														<option value="">Select Category</option>
+														<option value="Customer">Customer</option>
+														<option value="Vendor">Vendor</option>
 													</select>
-												</div>
+													</div>
 												<div class="col-md-2 col-xs-2"> 
 													<button class="btn btn-primary" type="submit" name="open">Open</button>
 												</div>
@@ -202,8 +193,15 @@
                                       <?php
  if(isset($_REQUEST['open']))
  {
- if($_REQUEST['group']!="") $group=" and groupname='$_REQUEST[group]'"; else $group="";
- $sql = "SELECT * FROM contact where cname like '%$_REQUEST[cname]%' and (mob1 like '%$_REQUEST[mobile]%' or mob2 like '%$_REQUEST[mobile]%' or mob3 like '%$_REQUEST[mobile]%') and email like '%$_REQUEST[email]%' and website like '%$_REQUEST[website]%' and firmname like '%$_REQUEST[fname]%' and address like '%$_REQUEST[address]%' ".$group." order by cname";
+ if($_REQUEST['category']!='')
+ {
+	$category="and category='$_REQUEST[category]' ";
+ }
+ else{
+	$category=" ";
+ }
+ 
+ $sql = "SELECT * FROM contact where cname like '%$_REQUEST[cname]%' and mob1 like '%$_REQUEST[mobile]%' and email like '%$_REQUEST[email]%' and website like '%$_REQUEST[website]%' and address like '%$_REQUEST[address]%' $category  order by cname";
 
 	$result = mysqli_query($con,$sql);
 
@@ -220,14 +218,11 @@
 				<th width='58'><span>S. No.</span></th>
 				<th width='189'><span>Name</span></th>	
 				<th width='189'><span>Address</span></th>	
-				<th width='169'><span>Firm Name</span></th>	
-				<th width='141'><span>Mobile 1</span></th>	
-				<th width='146'><span>Mobile 2</span></th>	
-				<th width='124'><span>Mobile 3</span></th>	
+				<th width='141'><span>Mobile </span></th>
 				<th width='155'><span>Email ID</span></th>	
 				<th width='150'><span>Website</span></th>	
 				<th width='150'><span>Remark</span></th>	
-				<th width='150'><span>Group</span></th>	
+				<th width='150'><span>Category</span></th>	
 			</tr>";
 ?>
 <form action='messageall.php' method='post'>
@@ -235,17 +230,14 @@
 			<thead>
 				<tr>
 					<th width="58"><span>Select <input type='checkbox' name='all' onchange="selectall();" id='all'/></span></th>
-					<th width="58"><span>S. No.</span></th>
-					<th width="189"><span>Name</span></th>	
-					<th width="189"><span>Address</span></th>	
-					<th width="169"><span>Firm Name</span></th>	
-					<th width="141"><span>Mobile 1</span></th>	
-					<th width="146"><span>Mobile 2</span></th>	
-					<th width="124"><span>Mobile 3</span></th>	
-					<th width="155"><span>Email ID</span></th>		
+					<th width='58'><span>S. No.</span></th>
+					<th width='189'><span>Name</span></th>	
+					<th width='189'><span>Address</span></th>	
+					<th width='141'><span>Mobile </span></th>
+					<th width='155'><span>Email ID</span></th>	
 					<th width='150'><span>Website</span></th>	
 					<th width='150'><span>Remark</span></th>	
-					<th width='150'><span>Group</span></th>
+					<th width='150'><span>Category</span></th>	
 					<th width="120">Actions</th>
 				</tr>
 			</thead>
@@ -262,27 +254,22 @@
 				echo "<td><input type='checkbox' name='contacts[]' value='$row[0]'/></td>";
 				echo "<td>$j</td>";
 				echo "<td>".htmlspecialchars($row[1])."</td>";
-				echo "<td>".htmlspecialchars($row[8])."</td>";
-				echo "<td>".htmlspecialchars($row[7])."</td>";
+				echo "<td>".htmlspecialchars($row[5])."</td>";
 				echo "<td>$row[2]</td>";
 				echo "<td>$row[3]</td>";
-				echo "<td>$row[4]</td>";
-				echo "<td>".htmlspecialchars($row[5])."</td>";
+				echo "<td>".htmlspecialchars($row[4])."</td>";
 				echo "<td>".htmlspecialchars($row[6])."</td>";
-				echo "<td>".htmlspecialchars($row[9])."</td>";
-				echo "<td>".htmlspecialchars($row[10])."</td>";
+				echo "<td>".htmlspecialchars($row[7])."</td>";
 				$table .=  "<tr>
 					<td style='padding-left:10px;'>$j</td>
 					<td style='padding-left:10px;'>".htmlspecialchars($row[1])."</td>
-					<td style='padding-left:10px;'>".htmlspecialchars($row[8])."</td>
-					<td style='padding-left:10px;'>".htmlspecialchars($row[7])."</td>
+					<td style='padding-left:10px;'>".htmlspecialchars($row[5])."</td>
+					<td style='padding-left:10px;'>".htmlspecialchars($row[2])."</td>
 					<td style='padding-left:10px;'>$row[2]</td>
 					<td style='padding-left:10px;'>$row[3]</td>
-					<td style='padding-left:10px;'>$row[4]</td>
-					<td style='padding-left:10px;'>".htmlspecialchars($row[5])."</td>
+					<td style='padding-left:10px;'>".htmlspecialchars($row[4])."</td>
 					<td style='padding-left:10px;'>".htmlspecialchars($row[6])."</td>
-					<td style='padding-left:10px;'>".htmlspecialchars($row[9])."</td>
-					<td style='padding-left:10px;'>".htmlspecialchars($row[10])."</td>
+					<td style='padding-left:10px;'>".htmlspecialchars($row[7])."</td>
 					</tr>";
 			?>
 				<td>

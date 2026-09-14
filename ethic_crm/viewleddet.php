@@ -98,45 +98,23 @@
 											<div class="form-group">                                        
                                                 <label class="col-md-4 control-label"><strong>GST No. :</strong></label>
                                                  <div class="col-md-8 control-label" style="text-align:left;">                                            
-                                                  <?php echo $l[6];?>                                      
+                                                  <?php echo $l[3];?>                                      
                                                 </div>
                                             </div>
 											
 											 <div class="form-group">
                                                 <label class="col-md-4 control-label"><strong>Phone No. :</strong></label>
                                                 <div class="col-md-8 control-label" style="text-align:left;">                                            
-                                                  <?php echo $l[8];?>                                      
+                                                  <?php echo $l[4];?>                                      
                                                 </div>
                                             </div>
-											 
 											<div class="form-group">
-                                                <label class="col-md-4 control-label"><strong>Fax :</strong></label>
+                                                <label class="col-md-4 control-label"><strong>Address :</strong></label>
                                                 <div class="col-md-8 control-label" style="text-align:left;">                                            
-                                                  <?php echo $l[10];?>                                      
+                                                   <?php echo $l[2];?>                                          
                                                 </div>
                                             </div>
 											
-											<div class="form-group">
-                                                <label class="col-md-4 control-label"><strong>Website :</strong></label>
-												 <div class="col-md-8 control-label" style="text-align:left;">                                            
-													 <?php echo $l[12];?>                                          
-													</div>                                                                                          
-                                            </div>
-											
-											
-                                            <div class="form-group">
-                                                <label class="col-md-4 control-label"><strong>City :</strong></label>
-                                                 <div class="col-md-8 control-label" style="text-align:left;">                                            
-                                                   <?php echo $l[4];?>                                          
-                                                </div>
-                                            </div>
-                                            
-                                           <div class="form-group">
-                                                <label class="col-md-4 control-label"><strong>State :</strong></label>
-                                                 <div class="col-md-8 control-label" style="text-align:left;">                                            
-                                                   <?php echo $l[5];?>                                          
-                                                </div>
-                                            </div>
                                         </div>
                                         <div class="col-md-6">
                                              <div class="form-group">
@@ -156,22 +134,11 @@
 													?>  
                                                 </div>
                                             </div>
-											<div class="form-group">                                        
-                                                <label class="col-md-5 control-label"><strong>Pan No. :</strong></label>
-                                                 <div class="col-md-7 control-label" style="text-align:left;">                                            
-                                                   <?php echo $l[7];?>                                          
-                                                </div>
-                                            </div>
-											 <div class="form-group">
-                                                <label class="col-md-5 control-label"><strong>Mobile No. :</strong></label>
-                                                <div class="col-md-7 control-label" style="text-align:left;">                                            
-                                                   <?php echo $l[9];?>                                          
-                                                </div>
-                                            </div>
+											
 											<div class="form-group">
                                                 <label class="col-md-5 control-label"><strong>Email ID :</strong></label>
                                                <div class="col-md-7 control-label" style="text-align:left;">  
-												<?php echo $l[11];?>
+												<?php echo $l[5];?>
                                                 </div>
                                             </div>
 											<div class="form-group">
@@ -180,12 +147,7 @@
                                                    <?php echo $led[3];?>                                          
                                                 </div>
                                             </div>
-											<div class="form-group">
-                                                <label class="col-md-5 control-label"><strong>Address :</strong></label>
-                                                <div class="col-md-7 control-label" style="text-align:left;">                                            
-                                                   <?php echo $l[3];?>                                          
-                                                </div>
-                                            </div>
+											
                                             
                                         </div>
 									</div>

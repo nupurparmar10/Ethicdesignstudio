@@ -6,7 +6,8 @@ $msg = "";
 if (isset($_REQUEST['msg'])) {
 	$msg = "Sales Bill Added Successfully!!!";
 }
-if (isset($_REQUEST['s1']) || isset($_REQUEST['s2']) || isset($_REQUEST['s3'])) {
+if (isset($_REQUEST['s1']) || isset($_REQUEST['s2']) || isset($_REQUEST['s3'])) 
+{
 	if ($_REQUEST['party'] != "")
 		$party = $_REQUEST['party'];
 	else {
@@ -22,6 +23,35 @@ if (isset($_REQUEST['s1']) || isset($_REQUEST['s2']) || isset($_REQUEST['s3'])) 
 			$party = $l[0];
 		}
 	}
+
+	// Sync party with contact table
+	$led_q = mysqli_query($con, "select l.name, d.mobile from ledger_accounts l left join ledger_details d on l.ledger_id=d.ledger_id where l.ledger_id='$party'");
+	if ($led_r = mysqli_fetch_row($led_q)) {
+		$p_name = $led_r[0];
+		$p_mobile = $led_r[1];
+		if ($p_mobile != "") {
+			$c_chk = mysqli_query($con, "select c_id from contact where mob1='$p_mobile'");
+			if (mysqli_num_rows($c_chk) == 0) {
+				$max_c = mysqli_fetch_row(mysqli_query($con, "select max(c_id) from contact"));
+				$new_c_id = $max_c[0] + 1;
+				mysqli_query($con, "insert into contact set c_id='$new_c_id', cname='$p_name', mob1='$p_mobile', category='Customer'");
+			}
+		}
+	}
+
+	// Generate unique invoice number and sale_id for new sales
+	$invno_query = mysqli_query($con, "select invno,sale_id from billbook order by sale_id desc limit 1");
+	if ($i = mysqli_fetch_row($invno_query))
+		$i[0] = explode("/", $i[0])[2];
+	else $i[0] = $i[1] = 0;
+	$i[0]++;
+	if ($i[0] < 10) $no = "EDS/" . date("Y-m") . "/00" . $i[0];
+	else if ($i[0] < 100) $no = "EDS/" . date("Y-m") . "/0" . $i[0];
+	else $no = "EDS/" . date("Y-m") . "/" . $i[0];
+	$sid = ++$i[1];
+
+	$_REQUEST['invno'] = $no;
+	$_REQUEST['sale_id'] = $sid;
 
 	$paidby = $_REQUEST['paidby'];
 	$amt = $_REQUEST['gtotal'];
@@ -43,7 +73,18 @@ if (isset($_REQUEST['s1']) || isset($_REQUEST['s2']) || isset($_REQUEST['s3'])) 
 			$distype = $_REQUEST['distype'][$i];
 			$mrp = $_REQUEST['mrp'][$i];
 			mysqli_query($con, "insert into bill_items set sale_id='$id', v_id='$item', qty='$qty', rate='$rate', dis='$disper', gst='$taxper', mrp='$mrp', distype='$distype'");
-			mysqli_query($con, "update variant set stock=stock-$qty, webstock=webstock-$qty where v_id='$item'");
+			$v_res = mysqli_query($con, "select webstock from variant where v_id='$item'");
+			$v_row = mysqli_fetch_row($v_res);
+			if ($v_row[0] > 0) {
+				if (($v_row[0] - $qty) < 0) {
+					$new_webstock = 0;
+				} else {
+					$new_webstock = $v_row[0] - $qty;
+				}
+			} else {
+				$new_webstock = 0;
+			}
+			mysqli_query($con, "update variant set stock=stock-$qty, webstock='$new_webstock' where v_id='$item'");
 		}
 	}
 
@@ -126,7 +167,7 @@ if (isset($_REQUEST['s4'])) {
 	$old = mysqli_fetch_row(mysqli_query($con, "select relatedwith from billbook where sale_id='$_REQUEST[sale_id]'"));
 	$p1 = mysqli_query($con, "select * from bill_items where sale_id='$_REQUEST[sale_id]'");
 	while ($p = mysqli_fetch_row($p1)) {
-		mysqli_query($con, "update variant set stock=stock+$p[2], webstock=webstock+$p[2] where v_id='$p[1]'");
+		mysqli_query($con, "update variant set stock=stock+$p[2] where v_id='$p[1]'");
 	}
 	mysqli_query($con, "delete from bill_items where sale_id='$_REQUEST[sale_id]'");
 	mysqli_query($con, "delete from transaction where relatedto='$old[0]'");
@@ -151,7 +192,7 @@ if (isset($_REQUEST['s4'])) {
 			$mrp = $_REQUEST['mrp'][$i];
 			$distype = $_REQUEST['distype'][$i];
 			mysqli_query($con, "insert into bill_items set sale_id='$id', v_id='$item', qty='$qty', rate='$rate', dis='$disper', gst='$taxper', mrp='$mrp', distype='$distype'");
-			mysqli_query($con, "update variant set stock=stock-$qty, webstock=webstock-$qty where v_id='$item'");
+			mysqli_query($con, "update variant set stock=stock-$qty where v_id='$item'");
 		}
 	}
 
@@ -529,10 +570,10 @@ while ($f = mysqli_fetch_row($f1))
 		{		
 			var $table = $('#input_fields');
 			var chk = $('#' + counter).find('select').eq(0).val();
-			var item_id = 'item_id' + counter;
-			var qty = 'qty' + counter;
 			if (chk != "") {
 				counter++;
+				var item_id = 'item_id' + counter;
+				var qty = 'qty' + counter;
 				var str1 = "<tr id='" + counter + "'><td align='left' valign='middle'><div class='form-group'><select id='" + item_id + "'class='form-control' name='item_id[]' onchange='onItemSelect(this);' tabindex='1'><option value=''>--Select--</option>" + query + "</select></div></td><td> <div class='form-group'><input type='text' class='form-control' name='mrp[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='qty[]' id='" + qty + "'  onkeyup=\"calc(); chk_qty(this.value,'" + qty + "');\" tabindex='1'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='disper[]' value='0' onkeyup='calc();'/></div></td><td> <div class='form-group'><select class='form-control' name='distype[]' onchange='calc();'><option>C</option><option value='P'>%</option></select></div></td><td> <div class='form-group'><input type='text' class='form-control' name='disamt[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='rate[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='taxper[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='taxamt[]' onkeyup='calc();'/></div></td><td> <div class='form-group'><input type='text' class='form-control' name='amount[]' onkeyup='calc();'/></div></td><td><a onclick='delete_row(" + counter + ");'><i class='fa fa-times'></i></a></td></tr>";
 
 				$("#input_fields").append(str1);
@@ -628,22 +669,13 @@ while ($f = mysqli_fetch_row($f1))
 																	if (isset($_REQUEST['sale_id'])) {
 																		$no = $p[3];
 																		$sid = $p[0];
-																	} else {
-																		$invno = mysqli_query($con, "select invno,sale_id from billbook order by sale_id desc limit 1");
-
-																		if ($i = mysqli_fetch_row($invno))
-																			$i[0] = explode("/", $i[0])[2];
-																		else $i[0] = $i[1] = 0;
-																		$i[0]++;
-																		if ($i[0] < 10) $no = "EDS/" . date("Y-m") . "/00" . $i[0];
-																		else if ($i[0] < 100) $no = "EDS/" . date("Y-m") . "/0" . $i[0];
-																		else $no = "EDS/" . date("Y-m") . "/" . $i[0];
-																		$sid = ++$i[1];
-																	}
 																	?>
 																	<input type="hidden" class="form-control" name="sale_id" value="<?php echo $sid; ?>" />
 																	<input type="hidden" class="form-control" name="invno" value="<?php echo $no; ?>" />
 																	<b><?php echo $no; ?></b>
+																	<?php } else { ?>
+																	<i>(Generated on Save)</i>
+																	<?php } ?>
 																</td>
 																<th width="15%">Date</th>
 																<td>
