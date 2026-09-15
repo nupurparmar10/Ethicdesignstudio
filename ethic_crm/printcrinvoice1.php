@@ -500,7 +500,7 @@ $d=mysqli_fetch_row($d1);
 
   <div class="parties">
     <div class="party-box">
-      <div class="party-title">Ethic Designs LLP</div>
+      <div class="party-title">ETHIC DESIGNS STUDIO</div>
       <div class="line"><b>Main Branch:</b> 2370/71, Rani No Haziro, Manek Chowk, Ahmedabad &ndash; 380001.</div>
       <div class="line"><b>Branch(2):</b> 100, Lavanya Society, Nr. Jivraj Mehta Hospital, Vasna, Ahmedabad &ndash; 380007.</div>
       <div class="icon-line"><span class="ic">&#128241;</span><span class="txt">9824077818, 9825162255, 8980060002</span></div>
@@ -674,8 +674,18 @@ $d=mysqli_fetch_row($d1);
     </div>
 
     <div class="qr-col">
-      <img src="img/vhspay.jpg" alt="QR Code">
-      For Payment Scan Here
+      <?php if ($i == $count) { 
+        $upi_id = "9724200065-1@okbizaxis";
+        $payee_name = "ETHIC DESIGNS STUDIO";
+        $upi_url = "upi://pay?pa={$upi_id}&pn=" . urlencode($payee_name) . "&cu=INR";
+        if (isset($grand) && $grand > 0) {
+            $upi_url .= "&am=" . urlencode($grand);
+        }
+        $qr_image_url = "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=" . urlencode($upi_url);
+      ?>
+      <img src="<?php echo $qr_image_url; ?>" alt="QR Code" width="120" height="120">
+      <br>For Payment Scan Here
+      <?php } ?>
     </div>
 
     <div class="bank-col">
@@ -688,11 +698,15 @@ $d=mysqli_fetch_row($d1);
     </div>
   </div>
 
-  <div class="for-company">For ETHIC DESIGNS LLP</div>
+  <div class="for-company">For ETHIC DESIGNS STUDIO</div>
 
   <div class="signatures">
-    <span>Customer&rsquo;s Signature</span>
+    <span><?php echo ($i == $count) ? "Customer&rsquo;s Signature" : ""; ?></span>
     <span class="sig-right">Authorised Signatory</span>
+  </div>
+
+  <div style="position: absolute; bottom: 5mm; left: 0; width: 100%; text-align: center; font-size: 7pt; color: #666;">
+    This is a computer generated invoice.
   </div>
 
 </div>

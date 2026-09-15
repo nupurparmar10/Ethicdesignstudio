@@ -1,19 +1,19 @@
 <?php
-	ob_start();
-	 session_start();
-     include_once("connect.php");
-	 $msg="";
-	 if(!isset($_REQUEST['sale_id']))
-	 {
-	 	header("Location: viewsales.php"); die;
-	 }
-     $accno="bank account no.";
-     $bank="BANK NAME";
-     $branch="BANK BRANCH";
-     $ifsc="IFSCCODE";
-     $accname="Ethic Design Studio";
-	
-	 function no_to_words($no)
+ob_start();
+session_start();
+include_once("connect.php");
+$msg="";
+if(!isset($_REQUEST['sale_id']))
+{
+    header("Location: viewsales.php"); die;
+}
+  $accno="bank account no.";
+  $bank="BANK NAME";
+  $branch="BANK BRANCH";
+  $ifsc="IFSCCODE";
+  $accname="Ethic Design Studio";
+
+function no_to_words($no)
 {
  $words = array('0'=> '' ,'1'=> 'One' ,'2'=> 'Two' ,'3' => 'Three','4' => 'Four','5' => 'Five','6' => 'Six','7' => 'Seven','8' => 'Eight','9' => 'Nine','10' => 'Ten','11' => 'Eleven','12' => 'Twelve','13' => 'Thirteen','14' => 'Fourteen','15' => 'Fifteen','16' => 'Sixteen','17' => 'Seventeen','18' => 'Eighteen','19' => 'Nineteen','20' => 'Twenty','30' => 'Thirty','40' => 'Fourty','50' => 'Fifty','60' => 'Sixty','70' => 'Seventy','80' => 'Eighty','90' => 'Ninty','100' => 'Hundred','1000' => 'Thousand','100000' => 'Lakh','10000000' => 'Crore');
     if($no == 0)
@@ -426,8 +426,8 @@ $d=mysqli_fetch_row($d1);
 	$c=mysqli_fetch_row($c1);
 	$total_items = $c[0];
 	if ($total_items == 0) $total_items = 1;
-	$limit1 = 10;
-	$limit2 = 16;
+	$limit1 = 12;
+	$limit2 = 14;
 	if ($total_items <= $limit1) {
 		$count = 1;
 	} else {
@@ -435,7 +435,7 @@ $d=mysqli_fetch_row($d1);
 	}
 	$amt1=0;
 	$tot=0;
-	$dis=0;
+	$dis=0; 
 	$igst=0;
 	$j=1;
 	$taxableamt28=0;
@@ -499,7 +499,7 @@ $d=mysqli_fetch_row($d1);
 
   <div class="parties">
     <div class="party-box">
-      <div class="party-title">Ethic Designs LLP</div>
+      <div class="party-title">ETHIC DESIGNS STUDIO</div>
       <div class="line"><b>Main Branch:</b> 2370/71, Rani No Haziro, Manek Chowk, Ahmedabad 380001.</div>
       <div class="line"><b>Branch(2):</b> 100, Lavanya Society, Nr. Jivraj Mehta Hospital, Vasna, Ahmedabad 380007.</div>
       <div class="icon-line"><span class="ic">&#128241;</span><span class="txt">9824077818, 9825162255, 8980060002</span></div>
@@ -668,8 +668,18 @@ $d=mysqli_fetch_row($d1);
     </div>
 
     <div class="qr-col">
-      <img src="img/vhspay.jpg" alt="QR Code">
-      For Payment Scan Here
+      <?php if ($i == $count) { 
+        $upi_id = "9724200065-1@okbizaxis";
+        $payee_name = "ETHIC DESIGNS STUDIO";
+        $upi_url = "upi://pay?pa={$upi_id}&pn=" . urlencode($payee_name) . "&cu=INR";
+        if (isset($grand) && $grand > 0) {
+            $upi_url .= "&am=" . urlencode($grand);
+        }
+        $qr_image_url = "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=" . urlencode($upi_url);
+      ?>
+      <img src="<?php echo $qr_image_url; ?>" alt="QR Code" width="120" height="120">
+      <br>For Payment Scan Here
+      <?php } ?>
     </div>
 
     <div class="bank-col">
@@ -682,11 +692,12 @@ $d=mysqli_fetch_row($d1);
     </div>
   </div>
 
-  <div class="for-company">For ETHIC DESIGNS LLP</div>
+  <div class="for-company">For ETHIC DESIGNS STUDIO</div>
 
-  <div class="signatures">
-    <span>Customer&rsquo;s Signature</span>
-    <span class="sig-right">Authorised Signatory</span>
+  <?php echo ($i == $count) ? "<div class='signatures'><span>Customer&rsquo;s Signature</span><span class='sig-right'>Authorised Signatory</span></div>" : ""; ?>
+
+  <div style="text-align: center; font-size: 7pt; color: #666; margin-top: 4mm;">
+    This is a computer generated invoice.
   </div>
 
 </div>
@@ -697,6 +708,5 @@ $d=mysqli_fetch_row($d1);
     }
 }
 ?>
-
 </body>
 </html>

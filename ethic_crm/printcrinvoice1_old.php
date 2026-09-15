@@ -134,7 +134,7 @@ $d=mysqli_fetch_row($d1);
 						<table width='100%' style='line-height:12px;' cellspacing='0'>
 							<tr>
 								<td width='2%'></td>
-								<td valign='top' width='40%'><span style='font-weight:bold; font-size:16px; color:#19b5d8;  font-style:italic;'>ETHIC DESIGNS LLP</span></td>
+								<td valign='top' width='40%'><span style='font-weight:bold; font-size:16px; color:#19b5d8;  font-style:italic;'>ETHIC DESIGNS STUDIO</span></td>
 								<td width='2%'></td>
 								<td valign='top' width='30%'><span style='font-weight:bold; font-size:16px; color:#19b5d8; padding-left:15px; font-style:italic;'>Billed To:</span></td>
 								<td></td>
@@ -296,7 +296,7 @@ $d=mysqli_fetch_row($d1);
 				<tr><td height="8px">&nbsp;</td></tr>
 				<tr>
 					<td></td>
-					<td align="right"><strong>For ETHIC DESIGNS LLP<br /></strong></td>
+					<td align="right"><strong>For ETHIC DESIGNS STUDIO<br /></strong></td>
 				</tr>
 				<tr><td height="20px">&nbsp;</td></tr>
 				<tr>
@@ -337,7 +337,7 @@ $d=mysqli_fetch_row($d1);
 						<table width='100%' style='line-height:12px;' cellspacing='0'>
 							<tr>
 								<td width='2%'></td>
-								<td valign='top' width='40%'><span style='font-weight:bold; font-size:16px; color:#19b5d8;  font-style:italic;'>ETHIC DESIGNS LLP</span></td>
+								<td valign='top' width='40%'><span style='font-weight:bold; font-size:16px; color:#19b5d8;  font-style:italic;'>ETHIC DESIGNS STUDIO</span></td>
 								<td width='2%'></td>
 								<td valign='top' width='30%'><span style='font-weight:bold; font-size:16px; color:#19b5d8; padding-left:15px; font-style:italic;'>Billed To:</span></td>
 								<td></td>
@@ -590,7 +590,7 @@ $d=mysqli_fetch_row($d1);
 				<tr><td height="8px">&nbsp;</td></tr>
 				<tr>
 					<td></td>
-					<td align="right"><strong>For ETHIC DESIGNS LLP<br /></strong></td>
+					<td align="right"><strong>For ETHIC DESIGNS STUDIO<br /></strong></td>
 				</tr>
 				<tr><td height="20px">&nbsp;</td></tr>
 				<tr>
