@@ -149,7 +149,7 @@
                                         <div class="col-md-6 col-xs-12">                                            
                                             <div class="input-group">
                                                 <span class="input-group-addon"><span class="fa fa-pencil"></span></span>
-                                                <input type="text" class="form-control" name="mobile" value='<?php echo $c[4]; ?>' required onkeyup="return allowOnly10Numeric(this);" oninput="allowOnly10Numeric(this);"/>
+                                                <input type="text" class="form-control" name="mobile" value='<?php echo $c[4]; ?>' required />
                                                 <span id="mobileError" style="color: red; font-size: 14px;"></span>
                                             </div>                                            
                                         </div>

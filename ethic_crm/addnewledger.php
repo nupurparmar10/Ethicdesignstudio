@@ -31,7 +31,7 @@
         <td>
             <div class="input-group">
                 <span class="input-group-addon"><span class="fa fa-mobile"></span></span> 
-                <input type="text" class="form-control" id="mobile" onkeyup="return allowOnly10Numeric(this);" oninput="allowOnly10Numeric(this);">
+                <input type="text" class="form-control" id="mobile" >
                 <span id="mobileError" style="color: red; font-size: 14px;"></span>
             </div>
         </td>

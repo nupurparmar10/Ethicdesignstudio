@@ -8,7 +8,6 @@ if (isset($_REQUEST['msg'])) {
 }
 if (isset($_REQUEST['s1']) || isset($_REQUEST['s2']) || isset($_REQUEST['s3'])) 
 {
-	mysqli_begin_transaction($con);
 	if ($_REQUEST['party'] != "")
 		$party = $_REQUEST['party'];
 	else {
@@ -41,7 +40,7 @@ if (isset($_REQUEST['s1']) || isset($_REQUEST['s2']) || isset($_REQUEST['s3']))
 	}
 
 	// Generate unique invoice number and sale_id for new sales
-	$invno_query = mysqli_query($con, "select invno,sale_id from billbook order by sale_id desc limit 1 FOR UPDATE");
+	$invno_query = mysqli_query($con, "select invno,sale_id from billbook order by sale_id desc limit 1");
 	if ($i = mysqli_fetch_row($invno_query))
 		$i[0] = explode("/", $i[0])[2];
 	else $i[0] = $i[1] = 0;
@@ -68,28 +67,14 @@ if (isset($_REQUEST['s1']) || isset($_REQUEST['s2']) || isset($_REQUEST['s3']))
 		$item = explode("-", $_REQUEST['item_id'][$i])[0];
 		$qty = $_REQUEST['qty'][$i];
 		if ($item != "" && $qty > 0) {
-			$v_res = mysqli_query($con, "select webstock, stock from variant where v_id='$item' FOR UPDATE");
-			$v_row = mysqli_fetch_row($v_res);
-			
-			$now_chk = date('Y-m-d H:i:s');
-			$draft_id_val = isset($_REQUEST['draft_id']) ? mysqli_real_escape_string($con, $_REQUEST['draft_id']) : '';
-			$res_q = mysqli_query($con, "SELECT SUM(qty) FROM sale_draft_items INNER JOIN sale_drafts ON sale_drafts.draft_id = sale_draft_items.draft_id WHERE v_id = '$item' AND sale_draft_items.draft_id != '$draft_id_val' AND expires_at > '$now_chk'");
-			$res_row = mysqli_fetch_row($res_q);
-			$reserved_stock = (int)$res_row[0];
-			
-			$available = (int)$v_row[1] - $reserved_stock;
-			if ($qty > $available) {
-				mysqli_rollback($con);
-				echo "<script>alert('Stock changed while saving. Insufficient stock for product ID $item. Max available: $available'); window.history.back();</script>";
-				exit;
-			}
-			
 			$rate = $_REQUEST['rate'][$i];
 			$disper = $_REQUEST['disper'][$i];
 			$taxper = $_REQUEST['taxper'][$i];
 			$distype = $_REQUEST['distype'][$i];
 			$mrp = $_REQUEST['mrp'][$i];
 			mysqli_query($con, "insert into bill_items set sale_id='$id', v_id='$item', qty='$qty', rate='$rate', dis='$disper', gst='$taxper', mrp='$mrp', distype='$distype'");
+			$v_res = mysqli_query($con, "select webstock from variant where v_id='$item'");
+			$v_row = mysqli_fetch_row($v_res);
 			if ($v_row[0] > 0) {
 				if (($v_row[0] - $qty) < 0) {
 					$new_webstock = 0;
@@ -105,7 +90,7 @@ if (isset($_REQUEST['s1']) || isset($_REQUEST['s2']) || isset($_REQUEST['s3']))
 
 	mysqli_query($con, "insert into billbook set sale_id=$id, party='" . $party . "', invno='" . $_REQUEST['invno'] . "', invdate='" . $invdate . "', paidby='" . $paidby . "', roundoff='$_REQUEST[roundoff]', amount='" . $amt . "', chequeno='" . $cheque . "', relatedwith='$rid', spdis='$_REQUEST[spdis]', freight='$_REQUEST[freight]', remark='$_REQUEST[remark]', other='$_REQUEST[other]', taxtype='$_REQUEST[taxtype]', emp_id='$_REQUEST[emp_id]', comm='$_REQUEST[comm]', oname='$_REQUEST[oname]', transport='$_REQUEST[transport]'");
 
-	$cmp1 = mysqli_query($con, "select max(trans_id) from transaction FOR UPDATE");
+	$cmp1 = mysqli_query($con, "select max(trans_id) from transaction");
 	$cmp = mysqli_fetch_row($cmp1);
 	$tid = $cmp[0] + 1;
 
@@ -176,11 +161,6 @@ if (isset($_REQUEST['s1']) || isset($_REQUEST['s2']) || isset($_REQUEST['s3']))
 
 		//end
 	}
-	if(isset($_REQUEST['draft_id']) && $_REQUEST['draft_id']!='') {
-		$d_id = mysqli_real_escape_string($con, $_REQUEST['draft_id']);
-		mysqli_query($con, "DELETE FROM sale_drafts WHERE draft_id='$d_id'");
-	}
-	mysqli_commit($con);
 	echo "<script language=\"javascript\">window.open(\"addsales.php?msg=set\",\"_self\");</script>";
 }
 if (isset($_REQUEST['s4'])) {
@@ -283,11 +263,6 @@ if (isset($_REQUEST['s4'])) {
 }
 ?>
 <?php
-$draft_id = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
-$now_d = date('Y-m-d H:i:s');
-$exp_d = date('Y-m-d H:i:s', strtotime('+30 minutes'));
-mysqli_query($con, "INSERT INTO sale_drafts (draft_id, created_at, expires_at) VALUES ('$draft_id', '$now_d', '$exp_d')");
-
 $f1 = mysqli_query($con, "select * from variant where item_id in (select item_id from item_details where status=1) and stock>0 order by v_id");
 $query = "";
 while ($f = mysqli_fetch_row($f1)) 
@@ -331,30 +306,7 @@ while ($f = mysqli_fetch_row($f1))
 	<script src="js\jquery.min.js"></script>
 
 	<script>
-		var draft_id = '<?php echo $draft_id; ?>';
-		setInterval(function() {
-			if (draft_id) {
-				$.post('draft_api.php', {action: 'heartbeat', draft_id: draft_id});
-			}
-		}, 300000); // 5 minutes
-		
-		window.addEventListener('pagehide', function() {
-			if (draft_id && (typeof isSubmitting === 'undefined' || !isSubmitting)) {
-				var data = new FormData();
-				data.append('action', 'release_all');
-				data.append('draft_id', draft_id);
-				navigator.sendBeacon('draft_api.php', data);
-			}
-		});
-
 		function delete_row(row) {
-			var select = $("#" + row).find("select[name='item_id[]']");
-			if (select.length > 0 && select.val() != "") {
-				var v_id = select.val().split("-")[0];
-				if (draft_id && v_id) {
-					$.post('draft_api.php', {action: 'remove_item', draft_id: draft_id, v_id: v_id});
-				}
-			}
 			$("#" + row).remove();
 			calc();
 		}
@@ -378,7 +330,6 @@ while ($f = mysqli_fetch_row($f1))
 					mrp[i].value = val;
 					qty[i].value = 1;
 					rate[i].value = val;
-					chk_qty(1, qty[i].id);
 				}
 			}
 			calc();
@@ -460,25 +411,9 @@ while ($f = mysqli_fetch_row($f1))
 			var qty = 'qty' + id;
 			var response = document.getElementById(item_id).value;
 			var str = response.split("-");
-			var v_id = str[0];
 			if (parseFloat(val) > parseFloat(str[3])) {
 				alert("Qty is greater than available stock");
 				document.getElementById(qty).value = '';
-			} else {
-				if (draft_id && val > 0 && v_id) {
-					$.post('draft_api.php', {
-						action: 'add_item', 
-						draft_id: draft_id, 
-						v_id: v_id, 
-						qty: val
-					}, function(res) {
-						if(res && res.status == 'error') {
-							alert(res.message);
-							document.getElementById(qty).value = '';
-							calc();
-						}
-					}, 'json');
-				}
 			}
 		}
 
@@ -534,7 +469,6 @@ while ($f = mysqli_fetch_row($f1))
 
 					// Within stock: bump existing row's qty instead of adding a new row
 					q.value = newQty;
-					chk_qty(newQty, q.id);
 					selectEl.value = "";
 					clearRowFields(selectEl);
 					calc();
@@ -647,18 +581,12 @@ while ($f = mysqli_fetch_row($f1))
 			}
 		}
 
-		var isSubmitting = false;
-
 		function chk() {
 			if (document.frm2.party.value == "" && document.frm2.party1.value == "") {
 				alert("Please select a party or add new party!!!");
 				return false;
 			}
-			if (confirm('Sure?')) {
-				isSubmitting = true;
-				return true;
-			}
-			return false;
+			return confirm('Sure?');
 		}
 	</script>
 </head>
@@ -717,7 +645,6 @@ while ($f = mysqli_fetch_row($f1))
 							}
 							?>
 							<form class="form-horizontal" method="post" action="addsales.php" name="frm2" enctype="multipart/form-data" onsubmit="return chk();">
-								<input type="hidden" name="draft_id" value="<?php echo isset($draft_id) ? $draft_id : ''; ?>" />
 								<div class="panel panel-default">
 									<div class="panel-body">
 										<div class="row">

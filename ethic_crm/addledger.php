@@ -211,7 +211,7 @@
                                                 <label class="col-md-3 control-label">Mobile No.</label>
                                                 <div class="col-md-9">
                                                     <div class="input-group">
-                                                        <span class="input-group-addon"><span class="fa fa-mobile"></span></span>                                                        <input type="text" class="form-control" value="<?php echo $l[4];?>" name="mobile" onkeyup="return allowOnly10Numeric(this);" oninput="allowOnly10Numeric(this);">
+                                                        <span class="input-group-addon"><span class="fa fa-mobile"></span></span>                                                        <input type="text" class="form-control" value="<?php echo $l[4];?>" name="mobile" >
 														<span id="mobileError" style="color: red; font-size: 14px;"></span>                                  
                                                     </div>
                                                 </div>
