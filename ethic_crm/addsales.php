@@ -437,10 +437,16 @@ while ($f = mysqli_fetch_row($f1))
 			var transport = document.getElementById("transport").value;
 			var other = document.getElementById("other").value;
 			var nettotal = total * 1 - spdis * 1 + freight * 1 + transport * 1 + other * 1;
-			var r = (nettotal * 1).toFixed(0);
-			var roundoff = r - nettotal;
-			document.getElementById("roundoff").value = roundoff.toFixed(2);
-			var grandt = nettotal * 1 + roundoff * 1;
+			// Read whatever the user has manually typed into the box
+			var roundoff = document.getElementById("roundoff").value; 
+			
+			// If the box is completely empty, treat it as 0 so the math doesn't break
+			if(roundoff === "") {
+			    roundoff = 0;
+			}
+			
+			// Calculate the grand total using the user's entered roundoff value
+			var grandt = nettotal * 1 + (roundoff * 1);
 			document.getElementById("gtotal").value = (grandt * 1).toFixed(2);
 		}
 
