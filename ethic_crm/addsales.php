@@ -156,12 +156,13 @@ if (isset($_REQUEST['s1']) || isset($_REQUEST['s2']) || isset($_REQUEST['s3']))
 
 	$tid++;
 
-	if ($roundoff != 0.00) {
-		if ($_REQUEST['roundoff'] < 0) {
-			$r = $roundoff - ($roundoff * 2);
+	$roundoff_val = (float)$roundoff;
+	if ($roundoff_val != 0.00) {
+		if ($roundoff_val < 0) {
+			$r = abs($roundoff_val);
 			mysqli_query($con, "insert into transaction set trans_id='" . $tid . "', tdate='" . $invdate . "', ledger_id='13', amount='" . $r . "', particulars='Inv. No. :$_REQUEST[invno]', type='Cr.', relatedto='$rid'");
 		} else {
-			$r = $roundoff;
+			$r = $roundoff_val;
 			mysqli_query($con, "insert into transaction set trans_id='" . $tid . "', tdate='" . $invdate . "', ledger_id='13', amount='" . $r . "', particulars='Inv. No. :$_REQUEST[invno]', type='Dr.', relatedto='$rid'");
 		}
 	}
@@ -269,12 +270,13 @@ if (isset($_REQUEST['s4'])) {
 
 	$tid++;
 
-	if ($roundoff != 0.00) {
-		if ($_REQUEST['roundoff'] < 0) {
-			$r = $roundoff - ($roundoff * 2);
+	$roundoff_val = (float)$roundoff;
+	if ($roundoff_val != 0.00) {
+		if ($roundoff_val < 0) {
+			$r = abs($roundoff_val);
 			mysqli_query($con, "insert into transaction set trans_id='" . $tid . "', tdate='" . $invdate . "', ledger_id='13', amount='" . $r . "', particulars='Inv. No. :$_REQUEST[invno]', type='Cr.', relatedto='$rid'");
 		} else {
-			$r = $roundoff;
+			$r = $roundoff_val;
 			mysqli_query($con, "insert into transaction set trans_id='" . $tid . "', tdate='" . $invdate . "', ledger_id='13', amount='" . $r . "', particulars='Inv. No. :$_REQUEST[invno]', type='Dr.', relatedto='$rid'");
 		}
 	}

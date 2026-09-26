@@ -616,7 +616,8 @@ $d=mysqli_fetch_row($d1);
                 $d1_discount=$pro[4]*$pro[2];
             
             $dis+=$d1_discount;
-            $amt=$pro[2]*$pro[3];
+            // Recalculate base amount dynamically to match addsales.php JS precision
+            $amt = ($pro[2] * $pro[6]) - $d1_discount;
             
             if($pro[5]==28)
                 $taxableamt28+=$amt;
@@ -627,8 +628,9 @@ $d=mysqli_fetch_row($d1);
             else if($pro[5]==5)
                 $taxableamt5+=$amt;
             
-            $v1=$amt*$pro[5]/100;
-            $amt=$amt+$v1;
+            // Round tax and final amount matching JS exactly
+            $v1 = round($amt * $pro[5] / 100, 2);
+            $amt = round($amt + $v1, 2);
             
             $sgst+=$v1/2;
             $cgst+=$v1/2;						
@@ -724,9 +726,7 @@ $d=mysqli_fetch_row($d1);
       <tr><td class="label">Round Off</td><td class="val"><?php $tot=$tot+$d[13]; echo number_format($d[13],2); ?></td></tr>
       <?php } ?>
       <?php
-		$round1=round($tot,0);
-		$r=$round1-$tot;
-		$grand=$tot+$r;
+		$grand=$tot;
       ?>
       <tr class="grand"><td class="label" style="color:#fff;">Grand Total</td><td class="val"><?php echo number_format($grand,2); ?></td></tr>
     </table>
